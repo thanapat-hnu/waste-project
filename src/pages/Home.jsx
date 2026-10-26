@@ -213,7 +213,7 @@ export default function Home() {
         </Card>
       )}
 
-      {isAvg && <Avg4Section tab={tab} onShowMap={() => update({ tab: 'dis' })} focus={tab === 'dis' ? focus : null} onPick={pickGroup} />}
+      {isAvg && <Avg4Section tab={tab} focus={tab === 'dis' ? focus : null} onPick={pickGroup} />}
     </>
   )
 
@@ -229,7 +229,8 @@ export default function Home() {
       onFocusChange={setFocus}
     >
       {sel && (
-        <div className="info-card">
+        // key ทำให้การ์ดเด้งขึ้นใหม่เมื่อเปลี่ยนจังหวัด
+        <div className="info-card" key={selected}>
           <button className="close" aria-label="ปิด" onClick={() => update({ p: null })}>×</button>
           <h3>{selected}</h3>
           <div className="muted small">{isAvg ? 'เฉลี่ย 7 ปี' : `ปี ${year}`}</div>
@@ -275,7 +276,7 @@ const TOP10 = {
   bl: { title: '10 จังหวัดขยะตกค้างมากสุด', key: 'backlog_days', dir: -1, max: null, fmt: (v) => `${fmtDays(v)} วัน` },
 }
 
-function Avg4Section({ tab, onShowMap, focus, onPick }) {
+function Avg4Section({ tab, focus, onPick }) {
   const { avg4, names } = useData()
   const groups = Object.entries(avg4.group_names).map(([g, name]) => {
     const list = names.filter((n) => avg4.provinces[n].group === +g)
@@ -292,7 +293,7 @@ function Avg4Section({ tab, onShowMap, focus, onPick }) {
     <>
       <div className="section-head">
         <h2>สรุป 4 กลุ่ม (เฉลี่ย 7 ปี)</h2>
-        <button className="btn" onClick={onShowMap}>ดูบนแผนที่</button>
+        <span className="muted small">กดการ์ดเพื่อเน้นกลุ่มบนแผนที่</span>
       </div>
       <div className="grid-4">
         {groups.map((g) => (
