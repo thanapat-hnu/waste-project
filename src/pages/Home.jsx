@@ -10,7 +10,9 @@ import { Badge, Card, Header, Tabs, TwoColumn } from '../components/Layout'
 import { BarChartV, Donut, KpiCard, RankBars, StackedBar100 } from '../components/charts'
 import ThailandMap from '../components/ThailandMap'
 import ImproperValue from '../components/ImproperValue'
+import Select from '../components/Select'
 
+const YEAR_OPTIONS = [{ value: 'avg', label: 'เฉลี่ย 7 ปี' }, ...YEARS.map((y) => ({ value: y, label: String(y) }))]
 const TAB_LABELS = { dis: 'การกำจัด', rec: 'รีไซเคิล', bl: 'ขยะตกค้าง', g4: 'ระดับ 4 กลุ่ม' }
 
 export default function Home() {
@@ -73,7 +75,7 @@ export default function Home() {
     return {
       key: (s) => s.cluster,
       color: (s) => CLUSTER5[s.cluster - 1],
-      legend: yearly.cluster_ids.map((c) => ({ key: c, color: CLUSTER5[c - 1], label: `C${c} ${yearly.cluster_names[c]}`, count: count((s) => s.cluster, c) })),
+      legend: yearly.cluster_ids.map((c) => ({ key: c, color: CLUSTER5[c - 1], label: `กลุ่ม ${c} ${yearly.cluster_names[c]}`, count: count((s) => s.cluster, c) })),
     }
   }, [tab, names, snaps, avg4, yearly])
 
@@ -82,13 +84,13 @@ export default function Home() {
 
   // KPI ใบที่ 3
   const kpi3 = {
-    dis: { label: 'จังหวัดกลุ่ม C5', value: `${scheme.legend.at(-1)?.count ?? 0} จังหวัด` },
+    dis: { label: 'จังหวัดกลุ่ม 5', value: `${scheme.legend.at(-1)?.count ?? 0} จังหวัด` },
     rec: { label: '% นำกลับมาใช้ทั้งประเทศ', value: fmtPct((nat.recycle_tpd / nat.waste_tpd) * 100) },
     bl: { label: 'จังหวัดตกค้างมาก', value: `${scheme.legend[3]?.count ?? 0} จังหวัด` },
     g4: { label: 'จังหวัดควรปรับปรุง', value: `${scheme.legend[3]?.count ?? 0} จังหวัด` },
   }[tab]
 
-  // ขยะกำจัดไม่ถูกต้องแยกตามกลุ่ม: รายปีใช้กลุ่ม C1–C5 ของปีนั้น, เฉลี่ย 7 ปีใช้กลุ่มเฉลี่ย 4 กลุ่ม (result_avg)
+  // ขยะกำจัดไม่ถูกต้องแยกตามกลุ่ม: รายปีใช้กลุ่ม 1–5 ของปีนั้น, เฉลี่ย 7 ปีใช้กลุ่มเฉลี่ย 4 กลุ่ม (result_avg)
   const improperGroups = isAvg
     ? Object.entries(avg4.group_names).map(([g, name]) => ({
         label: name,
@@ -97,7 +99,7 @@ export default function Home() {
           .filter((n) => avg4.provinces[n].group === +g)
           .reduce((a, n) => a + (avg4.provinces[n].waste_tpd * avg4.provinces[n].improper_pct) / 100, 0),
       }))
-    : yearly.cluster_ids.map((c, i) => ({ label: `C${c}`, color: CLUSTER5[c - 1], value: nat.improper_by_cluster[i] }))
+    : yearly.cluster_ids.map((c, i) => ({ label: `กลุ่ม ${c}`, color: CLUSTER5[c - 1], value: nat.improper_by_cluster[i] }))
   const improperTotal = improperGroups.reduce((a, g) => a + g.value, 0)
 
   // แนวโน้ม 7 ปี ทั้งประเทศตามแท็บ
@@ -119,7 +121,7 @@ export default function Home() {
         ]}
         value={tab}
         onChange={(t) => update({ tab: t })}
-        extra={<Link className="tab-link" to="/clusters">กลุ่มจังหวัด</Link>}
+        extra={<Link className="tab-link" to={`/clusters?year=${year}`}>กลุ่มจังหวัด</Link>}
       />
 
       <div className="grid-3">
@@ -191,7 +193,7 @@ export default function Home() {
             <Badge color={GROUP4[sel.group4 - 1]}>กลุ่มเฉลี่ย {sel.group4} · {avg4.group_names[sel.group4]}</Badge>
           ) : (
             <Badge color={clusterColor(sel.cluster)}>
-              C{sel.cluster} {yearly.cluster_names[sel.cluster]}{isAvg && ' (กลุ่มหลัก 7 ปี)'}
+              กลุ่ม {sel.cluster} {yearly.cluster_names[sel.cluster]}{isAvg && ' (กลุ่มหลัก 7 ปี)'}
             </Badge>
           )}
           <dl>
@@ -211,11 +213,7 @@ export default function Home() {
   return (
     <>
       <Header title="ภาพรวมการจัดการขยะ 77 จังหวัด" subtitle="ผลการจัดกลุ่มจังหวัด ปี 2562–2568">
-        <label htmlFor="year-select" className="sr-only">เลือกปี</label>
-        <select id="year-select" className="pill-select" value={year} onChange={(e) => update({ year: e.target.value })}>
-          <option value="avg">เฉลี่ย 7 ปี</option>
-          {YEARS.map((y) => <option key={y} value={y}>{y}</option>)}
-        </select>
+        <Select label="เลือกปี" align="right" value={year} onChange={(v) => update({ year: v })} options={YEAR_OPTIONS} />
       </Header>
       <TwoColumn left={left} right={right} />
     </>

@@ -41,7 +41,7 @@ export default function Trend() {
     names.forEach((n) => (c[trend.provinces[n].group] = (c[trend.provinces[n].group] || 0) + 1))
     return c
   }, [names, trend])
-  const legend = Object.entries(trend.group_names).map(([g, l]) => ({ key: +g, color: TREND4[g - 1], label: `C${g} ${l}`, count: counts[g] }))
+  const legend = Object.entries(trend.group_names).map(([g, l]) => ({ key: +g, color: TREND4[g - 1], label: `กลุ่ม ${g} ${l}`, count: counts[g] }))
   const colorOf = useCallback((n) => TREND4[trend.provinces[n]?.group - 1], [trend])
   const keyOf = useCallback((n) => trend.provinces[n]?.group, [trend])
   const map = (
@@ -86,7 +86,7 @@ function TrendDetail({ selected }) {
       </div>
 
       <div className="grid-4">
-        <KpiCard label="กลุ่มการเปลี่ยนแปลง" value={<Badge color={TREND4[t.group - 1]}>C{t.group}</Badge>} />
+        <KpiCard label="กลุ่มการเปลี่ยนแปลง" value={<Badge color={TREND4[t.group - 1]}>กลุ่ม {t.group}</Badge>} />
         <KpiCard label="รูปแบบของกลุ่ม" value={<span className="kpi-text">{t.group_name}</span>} />
         <KpiCard label="กำจัดไม่ถูกต้อง ปี 2568" value={<ImproperValue pct={im1} />} />
         <KpiCard
