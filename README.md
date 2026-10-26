@@ -1,16 +1,33 @@
-# React + Vite
+# ขยะจังหวัด 77
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+เว็บสรุปผลการจัดกลุ่ม 77 จังหวัดตามการจัดการขยะมูลฝอย ปี 2562–2568 (React + Vite + JSX)
+ข้อมูลดึงจาก Supabase (ตาราง `raw_yearly`, `result_yearly`, `result_avg`, `result_trend`) แล้วคำนวณ % / ระดับ / slope ฝั่งเว็บ
 
-Currently, two official plugins are available:
+## เริ่มใช้งาน
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```bash
+npm install
+cp .env.example .env.local   # ใส่ URL และ publishable key ของ Supabase
+npm run dev
+```
 
-## React Compiler
+## หน้าเว็บ
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| path | หน้า |
+|---|---|
+| `/` | ภาพรวม (เลือกปี / แท็บ การกำจัด · รีไซเคิล · ขยะตกค้าง · ระดับ 4 กลุ่ม) |
+| `/trend` | การเปลี่ยนแปลง 2562–2568 |
+| `/clusters` | กลุ่มจังหวัด C1–C5 |
+| `/province/:name` | ข้อมูลรายจังหวัด |
 
-## Expanding the ESLint configuration
+## โครงโค้ด
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- `src/lib/data.js` ดึงข้อมูลจาก Supabase และคำนวณตามสูตรใน WEB_SPEC (พอร์ตจาก `build_data.py`)
+- `src/components/ThailandMap.jsx` แผนที่ react-leaflet
+- `src/components/charts.jsx` กราฟที่วาดเอง
+- `public/data/thailand_provinces.geojson` ขอบเขตจังหวัด
+
+## เครดิต
+
+- ขอบเขตจังหวัด: [geoBoundaries](https://www.geoboundaries.org/) (THA ADM1, ข้อมูลจาก OpenStreetMap, ODbL 1.0)
+- แผนที่ฐาน: © [OpenStreetMap](https://www.openstreetmap.org/copyright) contributors
