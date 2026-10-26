@@ -34,9 +34,11 @@ export function Header({ title, subtitle, children }) {
   )
 }
 
-export function TwoColumn({ left, right }) {
+// top = แถวเต็มความกว้างเหนือทั้งสองคอลัมน์ (เช่นแท็บ) ให้แผนที่เริ่มเสมอกับการ์ดแรก
+export function TwoColumn({ left, right, top }) {
   return (
     <main className="two-col">
+      {top && <div className="two-col-top">{top}</div>}
       <div className="col-left">{left}</div>
       <div className="col-right">{right}</div>
     </main>

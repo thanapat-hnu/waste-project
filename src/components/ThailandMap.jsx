@@ -4,6 +4,7 @@ import { GeoJSON, MapContainer, Pane, TileLayer, ZoomControl, useMap } from 'rea
 import 'leaflet/dist/leaflet.css'
 import { useData } from '../lib/DataContext'
 import { MUTED } from '../lib/colors'
+import Select from './Select'
 
 const THAILAND_BOUNDS = [[5.6, 97.3], [20.5, 105.7]]
 
@@ -19,38 +20,79 @@ function useGeo(file) {
   return geo
 }
 
+// ขนาดกล่องเป็น 0 (เช่นตอนเพิ่ง mount หรือหน้าต่างถูกย่อ) จะทำให้ flyTo คำนวณได้ NaN
+function canFly(map) {
+  map.invalidateSize()
+  const size = map.getSize()
+  return size.x > 0 && size.y > 0
+}
+
 function FlyToSelected({ geo, selected }) {
   const map = useMap()
+  const prev = useRef(selected)
   useEffect(() => {
-    if (!geo || !selected) return
+    const had = prev.current
+    prev.current = selected
+    // ยกเลิกการเลือก (เช่นกดปิดการ์ด) ซูมกลับทั้งประเทศ
+    if (!selected) {
+      if (had && canFly(map)) map.flyToBounds(THAILAND_BOUNDS, { duration: 0.6 })
+      return
+    }
+    if (!geo) return
     const f = geo.features.find((x) => x.properties.name_th === selected)
-    if (!f) return
-    // ขนาดกล่องเป็น 0 (เช่นตอนเพิ่ง mount หรือหน้าต่างถูกย่อ) จะทำให้ flyTo คำนวณได้ NaN
-    map.invalidateSize()
-    const size = map.getSize()
-    if (!size.x || !size.y) return
+    if (!f || !canFly(map)) return
     map.flyToBounds(L.geoJSON(f).getBounds(), { maxZoom: 8, duration: 0.6 })
   }, [geo, selected, map])
+  return null
+}
+
+// ปุ่มรีเซ็ตมุมมอง วางซ้อนเหนือปุ่มซูม ใช้หน้าตาเดียวกับ leaflet-bar
+function ResetView() {
+  const map = useMap()
+  useEffect(() => {
+    const control = L.control({ position: 'bottomright' })
+    control.onAdd = () => {
+      const bar = L.DomUtil.create('div', 'leaflet-bar')
+      const a = L.DomUtil.create('a', 'reset-view', bar)
+      a.href = '#'
+      a.role = 'button'
+      a.title = 'รีเซ็ตแผนที่'
+      a.setAttribute('aria-label', 'รีเซ็ตแผนที่ ซูมกลับทั้งประเทศ')
+      a.innerHTML =
+        '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>'
+      L.DomEvent.disableClickPropagation(bar)
+      L.DomEvent.on(a, 'click', (e) => {
+        L.DomEvent.preventDefault(e)
+        if (canFly(map)) map.flyToBounds(THAILAND_BOUNDS, { duration: 0.6 })
+      })
+      return bar
+    }
+    control.addTo(map)
+    return () => control.remove()
+  }, [map])
   return null
 }
 
 /**
  * แผนที่จังหวัด (react-leaflet)
  * colorOf(name) → สี, selected/onSelect = จังหวัดที่เลือก
- * legend = [{ key, color, label, count }], focus = key ของกลุ่มที่เน้น, keyOf(name) → key ของจังหวัด
+ * legend = [{ key, color, label, count }], keyOf(name) → key ของจังหวัด
+ * focus/onFocusChange = กลุ่มที่เน้น ให้หน้าเป็นคนคุม (ไม่ส่งมา แผนที่จะจำเอง)
  */
-export default function ThailandMap({ colorOf, keyOf, selected, onSelect, legend = [], legendTitle, children }) {
+export default function ThailandMap({ colorOf, keyOf, selected, onSelect, legend = [], legendTitle, focus: focusProp, onFocusChange, legendDefaultOpen = false, children }) {
   const { names } = useData()
   const geo = useGeo('thailand_provinces.geojson')
   // เส้นขอบประเทศ: รวมรูปทรง 77 จังหวัดเป็นวงนอก (สร้างจากไฟล์จังหวัดชุดเดียวกัน)
   const outline = useGeo('thailand_outline.geojson')
   // กลุ่มที่กดเน้นจากสัญลักษณ์ ผูกกับชุดสัญลักษณ์ (legendTitle) เปลี่ยนแท็บแล้วจะล้างเอง
   const [focusState, setFocusState] = useState({ title: legendTitle, key: null })
-  const focus = focusState.title === legendTitle ? focusState.key : null
-  const setFocus = (key) => setFocusState({ title: legendTitle, key })
+  const controlled = onFocusChange != null
+  const focus = controlled ? (focusProp ?? null) : focusState.title === legendTitle ? focusState.key : null
+  const setFocus = (key) => (controlled ? onFocusChange(key) : setFocusState({ title: legendTitle, key }))
   // ชื่อจังหวัดที่ไม่มีในข้อมูล (เช่นพิมพ์ผิดในลิงก์) ถือว่ายังไม่ได้เลือก
   const sel = selected && names.includes(selected) ? selected : null
-  const [legendOpen, setLegendOpen] = useState(false)
+  const provinceOptions = useMemo(() => names.map((n) => ({ value: n, label: n })), [names])
+  const [legendOpen, setLegendOpen] = useState(legendDefaultOpen)
   const layerRef = useRef(null)
   // onEachFeature ผูกครั้งเดียว จึงต้องอ่าน onSelect ล่าสุดผ่าน ref
   const onSelectRef = useRef(onSelect)
@@ -87,11 +129,7 @@ export default function ThailandMap({ colorOf, keyOf, selected, onSelect, legend
   return (
     <div className="map-panel">
       <div className="map-top">
-        <label className="sr-only" htmlFor="map-province">เลือกจังหวัด</label>
-        <select id="map-province" className="pill-select" value={sel || ''} onChange={(e) => onSelect(e.target.value)}>
-          <option value="" disabled>เลือกจังหวัด</option>
-          {names.map((n) => <option key={n} value={n}>{n}</option>)}
-        </select>
+        <Select label="เลือกจังหวัด" placeholder="เลือกจังหวัด" value={sel || ''} onChange={onSelect} options={provinceOptions} />
 
         {legend.length > 0 && (
           <div className="legend glass">
@@ -119,6 +157,7 @@ export default function ThailandMap({ colorOf, keyOf, selected, onSelect, legend
 
       <MapContainer bounds={THAILAND_BOUNDS} className="map-canvas" zoomSnap={0.25} scrollWheelZoom zoomControl={false}>
         <ZoomControl position="bottomright" />
+        <ResetView />
         <TileLayer
           url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · ขอบเขตจังหวัด: <a href="https://www.geoboundaries.org/">geoBoundaries</a> (ODbL)'
