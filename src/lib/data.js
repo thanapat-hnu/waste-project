@@ -120,6 +120,8 @@ export async function loadData() {
       group: g,
       group_name: t.cluster_name,
       slope_yj: [t.slope_recycled, t.slope_proper, t.slope_improper],
+      // ทิศทางแนวโน้มจากคอลัมน์ trend_* ใน Supabase (เช่น "แนวโน้มเพิ่มขึ้น")
+      trend_dir: [t.trend_recycled, t.trend_proper, t.trend_improper],
       slope_pp: [p.recycle_pct, p.proper_pct, p.improper_pct].map((ys) => slope(YEARS, ys)),
       recycle_pct: p.recycle_pct, proper_pct: p.proper_pct, improper_pct: p.improper_pct, waste_tpd: p.waste_tpd,
     }

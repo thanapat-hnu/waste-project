@@ -106,6 +106,19 @@ body.dark .ui-select-list { color-scheme: dark; }
 /* layout */
 .two-col { max-width: 1440px; margin: 0 auto; padding: 24px 32px 40px; display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; }
 .two-col-top { flex: 1 1 100%; min-width: 0; display: flex; }
+/* กล่องทิศทางการเปลี่ยนแปลง 3 ด้าน (หน้าการเปลี่ยนแปลง) */
+.dir-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); gap: 12px; }
+.dir-box { display: flex; flex-direction: column; gap: 4px; padding: 6px 4px; }
+.dir-label { font-size: 13px; color: var(--ink2); }
+.dir-arrow { width: 120px; height: 66px; margin: 10px 0 14px; overflow: visible; }
+.dir-word { font-size: 20px; font-weight: 700; }
+.top-stack { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
+.back-btn { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 14px 0 10px; border-radius: 999px; background: var(--field); color: var(--ink); font-size: 14px; font-weight: 500; text-decoration: none; transition: background 0.2s; }
+.back-btn:hover { background: var(--seg); color: var(--ink); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.14); }
+.back-btn span { font-size: 20px; line-height: 1; margin-top: -2px; }
+button.back-btn { border: none; align-self: flex-start; }
+/* ป้ายกลุ่มของจังหวัดที่เลือก บนมุมขวาของแผนที่ */
+.map-badge { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 14px; border-radius: 14px; font-size: 13px; font-weight: 600; color: var(--ink); white-space: nowrap; }
 .col-left { flex: 999 1 640px; display: flex; flex-direction: column; gap: 16px; min-width: 0; }
 .col-right { flex: 1 1 470px; position: sticky; top: 84px; }
 .grid-2, .grid-3, .grid-4 { display: grid; gap: 16px; }

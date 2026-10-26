@@ -79,7 +79,8 @@ function ResetView() {
  * legend = [{ key, color, label, count }], keyOf(name) → key ของจังหวัด
  * focus/onFocusChange = กลุ่มที่เน้น ให้หน้าเป็นคนคุม (ไม่ส่งมา แผนที่จะจำเอง)
  */
-export default function ThailandMap({ colorOf, keyOf, selected, onSelect, legend = [], legendTitle, focus: focusProp, onFocusChange, legendDefaultOpen = false, children }) {
+// badge = ป้ายที่แสดงแทนกล่องสัญลักษณ์ (เช่น กลุ่มของจังหวัดที่เลือก) ถ้าส่งมาจะไม่แสดง dropdown สัญลักษณ์
+export default function ThailandMap({ colorOf, keyOf, selected, onSelect, legend = [], legendTitle, focus: focusProp, onFocusChange, legendDefaultOpen = false, badge, children }) {
   const { names } = useData()
   const geo = useGeo('thailand_provinces.geojson')
   // เส้นขอบประเทศ: รวมรูปทรง 77 จังหวัดเป็นวงนอก (สร้างจากไฟล์จังหวัดชุดเดียวกัน)
@@ -131,7 +132,8 @@ export default function ThailandMap({ colorOf, keyOf, selected, onSelect, legend
       <div className="map-top">
         <Select label="เลือกจังหวัด" placeholder="เลือกจังหวัด" value={sel || ''} onChange={onSelect} options={provinceOptions} />
 
-        {legend.length > 0 && (
+        {badge && <div className="map-badge glass">{badge}</div>}
+        {!badge && legend.length > 0 && (
           <div className="legend glass">
             <button className="legend-toggle" aria-expanded={legendOpen} onClick={() => setLegendOpen(!legendOpen)}>
               สัญลักษณ์ · {legendTitle} <span aria-hidden>{legendOpen ? '▴' : '▾'}</span>

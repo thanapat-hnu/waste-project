@@ -95,11 +95,17 @@ export default function Clusters() {
   )
 
   const tabs = (
-    <Tabs
-      tabs={groupIds.map((k) => ({ key: k, label: `กลุ่ม ${k}` }))}
-      value={c}
-      onChange={(k) => update({ c: k })}
-    />
+    <div className="top-stack">
+      {/* กลับหน้าหลักโดยคงปีที่เลือกไว้ */}
+      <Link to={`/?year=${year}`} className="back-btn">
+        <span aria-hidden>‹</span> กลับหน้าหลัก
+      </Link>
+      <Tabs
+        tabs={groupIds.map((k) => ({ key: k, label: `กลุ่ม ${k}` }))}
+        value={c}
+        onChange={(k) => update({ c: k })}
+      />
+    </div>
   )
 
   const left = (
