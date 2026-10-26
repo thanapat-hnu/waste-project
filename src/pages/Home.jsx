@@ -123,13 +123,28 @@ export default function Home() {
       />
 
       <div className="grid-3">
-        <KpiCard label="ขยะเกิดขึ้นทั้งประเทศ" value={`${fmtTon(nat.waste_tpd)} ตัน/วัน`} />
-        <KpiCard
-          label="% กำจัดไม่ถูกต้อง"
-          value={fmtPct((nat.improper_tpd / nat.waste_tpd) * 100)}
-          sub={`${fmtTon(nat.improper_tpd)} ตัน/วัน`}
-          color={DELTA.improper}
-        />
+        {/* การ์ด 2 ใบแรกเปลี่ยนตามแท็บ: รีไซเคิล/ขยะตกค้างแสดงตัวเลขของเรื่องนั้นแทนขยะรวมและการกำจัด */}
+        {tab === 'rec' ? (
+          <>
+            <KpiCard label="ขยะนำกลับมาใช้ทั้งประเทศ" value={`${fmtTon(nat.recycle_tpd)} ตัน/วัน`} sub={`จากขยะเกิดขึ้น ${fmtTon(nat.waste_tpd)} ตัน/วัน`} color={SERIES.recycle} />
+            <KpiCard label="จังหวัดรีไซเคิลสูง" value={`${scheme.legend[3]?.count ?? 0} จังหวัด`} sub={`รีไซเคิลต่ำ ${scheme.legend[0]?.count ?? 0} จังหวัด`} />
+          </>
+        ) : tab === 'bl' ? (
+          <>
+            <KpiCard label="ขยะตกค้างสะสมทั้งประเทศ" value={`${fmtTon(nat.backlog_t)} ตัน`} color={BACKLOG_LEVEL[2]} />
+            <KpiCard label="วันตกค้าง (ถ่วงน้ำหนัก)" value={`${fmtDays(nat.backlog_t / nat.waste_tpd)} วัน`} sub="ขยะตกค้างเท่ากับขยะที่เกิดกี่วัน" />
+          </>
+        ) : (
+          <>
+            <KpiCard label="ขยะเกิดขึ้นทั้งประเทศ" value={`${fmtTon(nat.waste_tpd)} ตัน/วัน`} />
+            <KpiCard
+              label="% กำจัดไม่ถูกต้อง"
+              value={fmtPct((nat.improper_tpd / nat.waste_tpd) * 100)}
+              sub={`${fmtTon(nat.improper_tpd)} ตัน/วัน`}
+              color={DELTA.improper}
+            />
+          </>
+        )}
         <KpiCard label={kpi3.label} value={kpi3.value} />
       </div>
 
