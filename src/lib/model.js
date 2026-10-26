@@ -10,14 +10,11 @@ export function mainCluster(clusters) {
   for (let i = clusters.length - 1; i >= 0; i--) if (count[clusters[i]] === max) return clusters[i]
 }
 
-export const levelOf = (x, bins) => bins.filter((b) => x >= b).length + 1
-
 // ค่ารายจังหวัดของปีที่เลือก (year = 2562..2568 หรือ 'avg')
 export function provinceSnapshot(data, name, year) {
   const p = data.yearly.provinces[name]
   if (year === 'avg') {
     const a = data.avg4.provinces[name]
-    const t = data.yearly.thresholds
     return {
       cluster: mainCluster(p.cluster),
       waste_tpd: a.waste_tpd,
@@ -25,8 +22,9 @@ export function provinceSnapshot(data, name, year) {
       proper_pct: a.proper_pct,
       improper_pct: a.improper_pct,
       backlog_days: a.backlog_days,
-      rec_level: levelOf(a.recycle_pct, t.recycle_pct),
-      backlog_level: levelOf(a.backlog_days, t.backlog_days),
+      // ระดับเฉลี่ย 7 ปีจาก result_avg ใน Supabase
+      rec_level: a.recycle_level,
+      backlog_level: a.backlog_level,
       group4: a.group,
     }
   }

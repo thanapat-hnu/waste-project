@@ -88,11 +88,17 @@ export default function Home() {
     g4: { label: 'จังหวัดควรปรับปรุง', value: `${scheme.legend[3]?.count ?? 0} จังหวัด` },
   }[tab]
 
-  // ขยะกำจัดไม่ถูกต้องแยกตามกลุ่ม (เฉลี่ย 7 ปี = เฉลี่ยของแต่ละปี)
-  const improperByCluster = yearly.cluster_ids.map((_, i) =>
-    isAvg ? YEARS.reduce((a, y) => a + yearly.national[y].improper_by_cluster[i], 0) / YEARS.length : nat.improper_by_cluster[i],
-  )
-  const improperTotal = improperByCluster.reduce((a, b) => a + b, 0)
+  // ขยะกำจัดไม่ถูกต้องแยกตามกลุ่ม: รายปีใช้กลุ่ม C1–C5 ของปีนั้น, เฉลี่ย 7 ปีใช้กลุ่มเฉลี่ย 4 กลุ่ม (result_avg)
+  const improperGroups = isAvg
+    ? Object.entries(avg4.group_names).map(([g, name]) => ({
+        label: name,
+        color: GROUP4[g - 1],
+        value: names
+          .filter((n) => avg4.provinces[n].group === +g)
+          .reduce((a, n) => a + (avg4.provinces[n].waste_tpd * avg4.provinces[n].improper_pct) / 100, 0),
+      }))
+    : yearly.cluster_ids.map((c, i) => ({ label: `C${c}`, color: CLUSTER5[c - 1], value: nat.improper_by_cluster[i] }))
+  const improperTotal = improperGroups.reduce((a, g) => a + g.value, 0)
 
   // แนวโน้ม 7 ปี ทั้งประเทศตามแท็บ
   const trendVal = (n) =>
@@ -131,14 +137,12 @@ export default function Home() {
         <Card title="ขยะกำจัดไม่ถูกต้องแยกตามกลุ่ม">
           <BarChartV
             ariaLabel="ขยะกำจัดไม่ถูกต้องแยกตามกลุ่ม"
-            items={yearly.cluster_ids.map((c, i) => ({
-              label: `C${c}`,
-              value: improperByCluster[i],
-              color: CLUSTER5[c - 1],
-              text: `${fmtTon(improperByCluster[i])} (${fmtPct((improperByCluster[i] / improperTotal) * 100)})`,
+            items={improperGroups.map((g) => ({
+              ...g,
+              text: `${fmtTon(g.value)} (${fmtPct((g.value / improperTotal) * 100)})`,
             }))}
           />
-          <p className="muted small">ตัน/วัน (% ของทั้งประเทศ)</p>
+          <p className="muted small">ตัน/วัน (% ของทั้งประเทศ){isAvg && ' · แบ่งตามกลุ่มเฉลี่ย 4 กลุ่ม'}</p>
         </Card>
         <Card title={`สัดส่วนจังหวัด · ${TAB_LABELS[tab]}`}>
           <Donut
@@ -178,9 +182,18 @@ export default function Home() {
           <button className="close" aria-label="ปิด" onClick={() => update({ p: null })}>×</button>
           <h3>{selected}</h3>
           <div className="muted small">{isAvg ? 'เฉลี่ย 7 ปี' : `ปี ${year}`}</div>
-          <Badge color={clusterColor(sel.cluster)}>
-            C{sel.cluster} {yearly.cluster_names[sel.cluster]}{isAvg && ' (กลุ่มหลัก)'}
-          </Badge>
+          {/* ป้ายเปลี่ยนตามแท็บ ให้ตรงกับสีที่จังหวัดนี้ได้บนแผนที่ */}
+          {tab === 'rec' ? (
+            <Badge color={REC_LEVEL[sel.rec_level - 1]}>ระดับรีไซเคิล · {recName(sel.rec_level)}</Badge>
+          ) : tab === 'bl' ? (
+            <Badge color={BACKLOG_LEVEL[sel.backlog_level - 1]}>ระดับขยะตกค้าง · {backlogName(sel.backlog_level)}</Badge>
+          ) : tab === 'g4' ? (
+            <Badge color={GROUP4[sel.group4 - 1]}>กลุ่มเฉลี่ย {sel.group4} · {avg4.group_names[sel.group4]}</Badge>
+          ) : (
+            <Badge color={clusterColor(sel.cluster)}>
+              C{sel.cluster} {yearly.cluster_names[sel.cluster]}{isAvg && ' (กลุ่มหลัก 7 ปี)'}
+            </Badge>
+          )}
           <dl>
             <dt>ขยะเกิดขึ้น</dt><dd>{fmtTon(sel.waste_tpd)} ตัน/วัน</dd>
             <dt>รีไซเคิล</dt><dd>{fmtPct(sel.recycle_pct)}</dd>

@@ -9,17 +9,12 @@ async function fetchAll(table) {
   return data
 }
 
-// numpy.percentile แบบ linear
-function percentile(values, q) {
-  const s = [...values].sort((a, b) => a - b)
-  const pos = (s.length - 1) * (q / 100)
-  const lo = Math.floor(pos)
-  const hi = Math.ceil(pos)
-  return s[lo] + (s[hi] - s[lo]) * (pos - lo)
-}
-
-// numpy.digitize(x, bins) + 1  → ระดับ 1..4
-const level = (x, bins) => bins.filter((b) => x >= b).length + 1
+// ระดับรีไซเคิล/ขยะตกค้าง ใช้ค่าจากคอลัมน์ level_recycling / level_backlog ใน Supabase ตรงๆ (ทีมเลือกแทนการคำนวณตาม WEB_SPEC 4.3)
+// แปลงข้อความเป็นเลข 1..4 (รีไซเคิล: ต่ำ→สูง, ตกค้าง: น้อย→มาก)
+const REC_LEVELS = ['รีไซเคิลต่ำ', 'รีไซเคิลค่อนข้างต่ำ', 'รีไซเคิลค่อนข้างดี', 'รีไซเคิลสูง']
+const BACKLOG_LEVELS = ['ตกค้างน้อย', 'ตกค้างค่อนข้างน้อย', 'ตกค้างค่อนข้างมาก', 'ตกค้างมาก']
+const recLevel = (label) => REC_LEVELS.indexOf(label) + 1 || null
+const backlogLevel = (label) => BACKLOG_LEVELS.indexOf(label) + 1 || null
 
 // slope ของเส้นตรง OLS (เท่ากับ np.polyfit(x, y, 1)[0])
 function slope(xs, ys) {
@@ -54,11 +49,7 @@ export async function loadData() {
     }))
     .sort((a, b) => byThai(a.province, b.province) || a.year - b.year)
 
-  const thresholds = {
-    recycle_pct: [25, 50, 75].map((q) => percentile(rows.map((r) => r.re_pct), q)),
-    backlog_days: [25, 50, 75].map((q) => percentile(rows.map((r) => r.backlog_days), q)),
-  }
-
+  const resultOf = new Map(resYearly.map((r) => [`${r.province}|${r.year}`, r]))
   const clusterOf = new Map(resYearly.map((r) => [`${r.province}|${r.year}`, r.cluster]))
   const clusterNames = {}
   resYearly.forEach((r) => (clusterNames[r.cluster] ??= r.level_disposal))
@@ -78,8 +69,9 @@ export async function loadData() {
     p.proper_pct.push(r.pr_pct)
     p.improper_pct.push(r.im_pct)
     p.backlog_days.push(r.backlog_days)
-    p.rec_level.push(level(r.re_pct, thresholds.recycle_pct))
-    p.backlog_level.push(level(r.backlog_days, thresholds.backlog_days))
+    const res = resultOf.get(`${r.province}|${r.year}`)
+    p.rec_level.push(recLevel(res?.level_recycling))
+    p.backlog_level.push(backlogLevel(res?.level_backlog))
     p.rows.push(r)
   }
 
@@ -108,7 +100,7 @@ export async function loadData() {
   const all = sumNational(rows)
   national.avg = Object.fromEntries(Object.entries(all).map(([k, v]) => [k, v / YEARS.length]))
 
-  const yearly = { years: YEARS, cluster_names: clusterNames, cluster_ids: clusterIds, thresholds, provinces, national }
+  const yearly = { years: YEARS, cluster_names: clusterNames, cluster_ids: clusterIds, provinces, national }
 
   // ---------- trend ----------
   const trendGroupNames = {}
@@ -150,8 +142,8 @@ export async function loadData() {
     avgProv[a.province] = {
       group: a.cluster,
       group_name: a.level_disposal,
-      recycle_level: a.level_recycling,
-      backlog_level: a.level_backlog,
+      recycle_level: recLevel(a.level_recycling),
+      backlog_level: backlogLevel(a.level_backlog),
       waste_tpd: w,
       recycle_pct: pct(m('waste_recycled_tpd'), w),
       proper_pct: pct(m('waste_proper_tpd'), w),
