@@ -26,8 +26,8 @@ export default function Trend() {
   const fromUrl = params.get('p')
   const selected = [fromUrl, province].find((n) => n && trend.provinces[n])
   useEffect(() => {
-    if (fromUrl && fromUrl !== province && trend.provinces[fromUrl]) setProvince(fromUrl)
-  }, [fromUrl, province, setProvince, trend])
+    if (fromUrl && trend.provinces[fromUrl]) setProvince(fromUrl)
+  }, [fromUrl, setProvince, trend])
   const onSelect = useCallback(
     (p) => {
       setProvince(p)
@@ -82,7 +82,7 @@ function TrendDetail({ selected }) {
           <h2 className="province-title">{selected}</h2>
           <div className="muted">{t.region}</div>
         </div>
-        <Badge color="#22406B">กลุ่มการเปลี่ยนแปลง 2562–2568</Badge>
+        <Badge color="var(--focus)">กลุ่มการเปลี่ยนแปลง 2562–2568</Badge>
       </div>
 
       <div className="grid-4">
@@ -114,7 +114,7 @@ function TrendDetail({ selected }) {
           {METRICS.map((m, i) => {
             const v = t.slope_yj[i]
             const good = m.higherIsBetter ? v > 0 : v < 0
-            const color = Math.abs(v) < 0.02 ? '#9AA09C' : good ? '#2B6CB0' : '#E08A3C'
+            const color = Math.abs(v) < 0.02 ? 'var(--ink2)' : good ? SERIES.recycle : SERIES.improper
             const w = (Math.min(Math.abs(v), SLOPE_SCALE) / SLOPE_SCALE) * 50
             const meanX = 50 + (Math.max(-SLOPE_SCALE, Math.min(SLOPE_SCALE, groupMean[i])) / SLOPE_SCALE) * 50
             return (

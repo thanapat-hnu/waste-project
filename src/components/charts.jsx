@@ -103,12 +103,12 @@ export function LineChart({ labels, series, ariaLabel, width = 640, height = 260
     <svg viewBox={`0 0 ${width} ${height}`} className="line-chart" role="img" aria-label={ariaLabel}>
       {[0, 25, 50, 75, 100].map((g) => (
         <g key={g}>
-          <line x1={pad.l} x2={width - pad.r} y1={y(g)} y2={y(g)} stroke="#ECEAE3" />
-          <text x={pad.l - 6} y={y(g) + 4} textAnchor="end" fontSize="11" fill="#5E6662">{g}%</text>
+          <line x1={pad.l} x2={width - pad.r} y1={y(g)} y2={y(g)} stroke="var(--line)" />
+          <text x={pad.l - 6} y={y(g) + 4} textAnchor="end" fontSize="11" fill="var(--ink2)">{g}%</text>
         </g>
       ))}
       {labels.map((l, i) => (
-        <text key={l} x={x(i)} y={height - 8} textAnchor="middle" fontSize="11" fill="#5E6662">{l}</text>
+        <text key={l} x={x(i)} y={height - 8} textAnchor="middle" fontSize="11" fill="var(--ink2)">{l}</text>
       ))}
       {series.map((s) => (
         <g key={s.name}>

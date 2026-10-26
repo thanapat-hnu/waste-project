@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useData } from '../lib/DataContext'
 import { YEARS } from '../lib/data'
-import { CLUSTER5 } from '../lib/colors'
+import { CLUSTER5, CLUSTER5_FG, MUTED } from '../lib/colors'
 import { fmtPct } from '../lib/format'
 import { Badge, Card, Header, Tabs, TwoColumn } from '../components/Layout'
 import { BarChartV, KpiCard } from '../components/charts'
@@ -14,7 +14,9 @@ export default function Clusters() {
   const { yearly, names } = useData()
   const [params, setParams] = useSearchParams()
   const navigate = useNavigate()
-  const c = Number(params.get('c')) || 5
+  // เลขกลุ่มที่ไม่มีอยู่จริง (เช่น c=9) ใช้ C5 แทน
+  const cParam = Number(params.get('c'))
+  const c = yearly.cluster_ids.includes(cParam) ? cParam : 5
   const P = yearly.provinces
 
   const stats = useMemo(() => {
@@ -55,7 +57,7 @@ export default function Clusters() {
   }, [names, P, c])
 
   const legend = yearly.cluster_ids.map((k) => ({ key: k, color: CLUSTER5[k - 1], label: `C${k} ${yearly.cluster_names[k]}`, count: yearly.national[2568].count_by_cluster[k - 1] }))
-  const colorOf = useCallback((n) => (P[n].cluster[LAST] === c ? CLUSTER5[c - 1] : '#D8D8D2'), [P, c])
+  const colorOf = useCallback((n) => (P[n].cluster[LAST] === c ? CLUSTER5[c - 1] : MUTED), [P, c])
   const keyOf = useCallback((n) => P[n].cluster[LAST], [P])
 
   const left = (
@@ -89,7 +91,7 @@ export default function Clusters() {
             <li key={n}>
               <Link to={`/province/${encodeURIComponent(n)}`}>{n}</Link>
               {P[n].cluster.map((k, i) => (
-                <span key={i} className="path-cell" style={{ background: CLUSTER5[k - 1] }} title={`${YEARS[i]}: C${k}`}>{k}</span>
+                <span key={i} className="path-cell" style={{ background: CLUSTER5[k - 1], color: CLUSTER5_FG[k - 1] }} title={`${YEARS[i]}: C${k}`}>{k}</span>
               ))}
             </li>
           ))}

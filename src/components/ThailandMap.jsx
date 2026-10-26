@@ -1,20 +1,21 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import L from 'leaflet'
-import { GeoJSON, MapContainer, TileLayer, ZoomControl, useMap } from 'react-leaflet'
+import { GeoJSON, MapContainer, Pane, TileLayer, ZoomControl, useMap } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import { useData } from '../lib/DataContext'
+import { MUTED } from '../lib/colors'
 
 const THAILAND_BOUNDS = [[5.6, 97.3], [20.5, 105.7]]
 
-let geoCache = null
-function useGeo() {
-  const [geo, setGeo] = useState(geoCache)
+const geoCache = {}
+function useGeo(file) {
+  const [geo, setGeo] = useState(geoCache[file] || null)
   useEffect(() => {
-    if (geoCache) return
-    fetch(`${import.meta.env.BASE_URL}data/thailand_provinces.geojson`)
+    if (geoCache[file]) return
+    fetch(`${import.meta.env.BASE_URL}data/${file}`)
       .then((r) => r.json())
-      .then((g) => setGeo((geoCache = g)))
-  }, [])
+      .then((g) => setGeo((geoCache[file] = g)))
+  }, [file])
   return geo
 }
 
@@ -40,8 +41,15 @@ function FlyToSelected({ geo, selected }) {
  */
 export default function ThailandMap({ colorOf, keyOf, selected, onSelect, legend = [], legendTitle, children }) {
   const { names } = useData()
-  const geo = useGeo()
-  const [focus, setFocus] = useState(null)
+  const geo = useGeo('thailand_provinces.geojson')
+  // เส้นขอบประเทศ: รวมรูปทรง 77 จังหวัดเป็นวงนอก (สร้างจากไฟล์จังหวัดชุดเดียวกัน)
+  const outline = useGeo('thailand_outline.geojson')
+  // กลุ่มที่กดเน้นจากสัญลักษณ์ ผูกกับชุดสัญลักษณ์ (legendTitle) เปลี่ยนแท็บแล้วจะล้างเอง
+  const [focusState, setFocusState] = useState({ title: legendTitle, key: null })
+  const focus = focusState.title === legendTitle ? focusState.key : null
+  const setFocus = (key) => setFocusState({ title: legendTitle, key })
+  // ชื่อจังหวัดที่ไม่มีในข้อมูล (เช่นพิมพ์ผิดในลิงก์) ถือว่ายังไม่ได้เลือก
+  const sel = selected && names.includes(selected) ? selected : null
   const [legendOpen, setLegendOpen] = useState(false)
   const layerRef = useRef(null)
   // onEachFeature ผูกครั้งเดียว จึงต้องอ่าน onSelect ล่าสุดผ่าน ref
@@ -50,39 +58,43 @@ export default function ThailandMap({ colorOf, keyOf, selected, onSelect, legend
     onSelectRef.current = onSelect
   }, [onSelect])
 
+  // เส้นขอบ/สีเลือก/hover คุมด้วย CSS class .prov (เปลี่ยนตามโหมดมืดได้)
   const styleOf = useMemo(
     () => (feature) => {
       const name = feature.properties.name_th
-      const dim = focus != null && keyOf && keyOf(name) !== focus
-      const isSel = name === selected
-      return {
-        fillColor: colorOf(name) || '#D8D8D2',
-        fillOpacity: dim ? 0.15 : 0.9,
-        color: isSel ? '#1B1F1D' : '#FFFFFF',
-        weight: isSel ? 2.4 : 0.7,
-      }
+      // เลือกจังหวัดแล้ว จังหวัดอื่นจางลง เหลือเด่นเฉพาะจังหวัดที่เลือก
+      const dim = (sel && name !== sel) || (focus != null && keyOf && keyOf(name) !== focus)
+      return { className: 'prov', fillColor: colorOf(name) || MUTED, fillOpacity: dim ? 0.12 : 0.88, weight: 0.8 }
     },
-    [colorOf, keyOf, focus, selected],
+    [colorOf, keyOf, focus, sel],
   )
 
+  // ยกจังหวัดที่เลือกขึ้นบนสุด ไม่ให้ขอบจังหวัดข้างเคียงทับกรอบ
+  const selRef = useRef(sel)
+  const raiseSelected = () => layerRef.current?.eachLayer((l) => l.feature.properties.name_th === selRef.current && l.bringToFront())
   useEffect(() => {
+    selRef.current = sel
     const layer = layerRef.current
     if (!layer) return
     layer.setStyle(styleOf)
-    layer.eachLayer((l) => l.feature.properties.name_th === selected && l.bringToFront())
-  }, [styleOf, selected])
+    layer.eachLayer((l) => {
+      const isSel = l.feature.properties.name_th === sel
+      l.getElement()?.classList.toggle('is-sel', isSel)
+      if (isSel) l.bringToFront()
+    })
+  }, [styleOf, sel, geo])
 
   return (
     <div className="map-panel">
       <div className="map-top">
         <label className="sr-only" htmlFor="map-province">เลือกจังหวัด</label>
-        <select id="map-province" className="pill-select" value={selected || ''} onChange={(e) => onSelect(e.target.value)}>
+        <select id="map-province" className="pill-select" value={sel || ''} onChange={(e) => onSelect(e.target.value)}>
           <option value="" disabled>เลือกจังหวัด</option>
           {names.map((n) => <option key={n} value={n}>{n}</option>)}
         </select>
 
         {legend.length > 0 && (
-          <div className="legend">
+          <div className="legend glass">
             <button className="legend-toggle" aria-expanded={legendOpen} onClick={() => setLegendOpen(!legendOpen)}>
               สัญลักษณ์ · {legendTitle} <span aria-hidden>{legendOpen ? '▴' : '▾'}</span>
             </button>
@@ -90,7 +102,7 @@ export default function ThailandMap({ colorOf, keyOf, selected, onSelect, legend
               <ul className="legend-list">
                 {legend.map((l) => (
                   <li key={l.key}>
-                    <button aria-pressed={focus === l.key} onClick={() => setFocus(focus === l.key ? null : l.key)}>
+                    <button aria-pressed={focus === l.key} style={{ opacity: focus != null && focus !== l.key ? 0.45 : 1 }} onClick={() => setFocus(focus === l.key ? null : l.key)}>
                       <span className="swatch" style={{ background: l.color }} />
                       <span className="legend-label">{l.label}</span>
                       {l.count != null && <span className="legend-count">{l.count}</span>}
@@ -117,12 +129,25 @@ export default function ThailandMap({ colorOf, keyOf, selected, onSelect, legend
             data={geo}
             style={styleOf}
             onEachFeature={(f, layer) => {
-              layer.bindTooltip(f.properties.name_th, { sticky: true })
+              layer.bindTooltip(f.properties.name_th, { sticky: true, direction: 'top', offset: [0, -10], className: 'map-tip', opacity: 1 })
               layer.on('click', () => onSelectRef.current(f.properties.name_th))
+              layer.on('mouseover', () => {
+                layer.getElement()?.classList.add('is-hover')
+                layer.bringToFront()
+              })
+              layer.on('mouseout', () => {
+                layer.getElement()?.classList.remove('is-hover')
+                raiseSelected()
+              })
             }}
           />
         )}
-        <FlyToSelected geo={geo} selected={selected} />
+        {outline && (
+          <Pane name="outline" style={{ zIndex: 450, pointerEvents: 'none' }}>
+            <GeoJSON data={outline} interactive={false} style={{ className: 'th-outline', fill: false, weight: 2 }} />
+          </Pane>
+        )}
+        <FlyToSelected geo={geo} selected={sel} />
       </MapContainer>
     </div>
   )

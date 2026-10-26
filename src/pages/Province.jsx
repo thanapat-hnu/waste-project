@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useData } from '../lib/DataContext'
 import { useSelection } from '../lib/SelectionContext'
 import { YEARS } from '../lib/data'
-import { CLUSTER5, SERIES } from '../lib/colors'
+import { CLUSTER5, MUTED, SERIES } from '../lib/colors'
 import { fmtPct, fmtTon } from '../lib/format'
 import { clusterColor } from '../lib/model'
 import { Badge, Card, Header, TwoColumn } from '../components/Layout'
@@ -22,10 +22,10 @@ export default function Province() {
   // ลำดับ: ชื่อใน URL → จังหวัดที่เลือกจากหน้าอื่น (ไม่มีค่าเริ่มต้น ให้ผู้ใช้เลือกเอง)
   const selected = [name, province].find((n) => n && yearly.provinces[n])
   useEffect(() => {
-    if (name && name !== province && yearly.provinces[name]) setProvince(name)
-  }, [name, province, setProvince, yearly])
+    if (name && yearly.provinces[name]) setProvince(name)
+  }, [name, setProvince, yearly])
   const go = useCallback((n) => navigate(`/province/${encodeURIComponent(n)}`), [navigate])
-  const grey = useCallback(() => '#D8D8D2', [])
+  const grey = useCallback(() => MUTED, [])
 
   if (!selected)
     return (
@@ -40,7 +40,7 @@ export default function Province() {
 function ProvinceDetail({ selected, go }) {
   const { yearly, names } = useData()
   const p = yearly.provinces[selected]
-  const colorOf = useCallback((n) => (n === selected ? CLUSTER5[p.cluster[LAST] - 1] : '#D8D8D2'), [selected, p])
+  const colorOf = useCallback((n) => (n === selected ? CLUSTER5[p.cluster[LAST] - 1] : MUTED), [selected, p])
 
   const nat = yearly.national[YEARS[LAST]]
   const natPct = (k) => (nat[k] / nat.waste_tpd) * 100
@@ -121,9 +121,9 @@ function ProvinceDetail({ selected, go }) {
             <div key={m.name} className="compare">
               <div className="small"><b>{m.name}</b></div>
               {[
-                ['จังหวัดนี้', m.mine, '#1B1F1D'],
+                ['จังหวัดนี้', m.mine, 'var(--ink)'],
                 [`กลุ่ม C${c}`, groupPct(m.k), clusterColor(c)],
-                ['ทั้งประเทศ', natPct(m.nk), '#9AA09C'],
+                ['ทั้งประเทศ', natPct(m.nk), 'var(--ink2)'],
               ].map(([label, v, color]) => (
                 <div key={label} className="compare-row">
                   <span>{label}</span>

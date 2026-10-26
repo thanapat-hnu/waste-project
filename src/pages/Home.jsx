@@ -3,7 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { useData } from '../lib/DataContext'
 import { useSelection } from '../lib/SelectionContext'
 import { YEARS } from '../lib/data'
-import { BACKLOG_LEVEL, BACKLOG_LEVEL_NAMES, CLUSTER5, DELTA, FLOW, GROUP4, REC_LEVEL, REC_LEVEL_NAMES } from '../lib/colors'
+import { BACKLOG_LEVEL, BACKLOG_LEVEL_NAMES, CLUSTER5, DELTA, FLOW, GROUP4, REC_LEVEL, REC_LEVEL_NAMES, SERIES } from '../lib/colors'
 import { fmtDays, fmtPct, fmtTon } from '../lib/format'
 import { backlogName, clusterColor, provinceSnapshot, recName } from '../lib/model'
 import { Badge, Card, Header, Tabs, TwoColumn } from '../components/Layout'
@@ -17,17 +17,20 @@ export default function Home() {
   const data = useData()
   const { yearly, avg4, names } = data
   const [params, setParams] = useSearchParams()
-  const year = params.get('year') === 'avg' ? 'avg' : Number(params.get('year')) || 2568
+  // ปีในลิงก์ที่ไม่มีข้อมูล (เช่น 2570) ใช้ปีล่าสุดแทน
+  const yearParam = params.get('year')
+  const year = yearParam === 'avg' ? 'avg' : YEARS.includes(Number(yearParam)) ? Number(yearParam) : 2568
   const isAvg = year === 'avg'
   let tab = params.get('tab') || 'dis'
   if (tab === 'g4' && !isAvg) tab = 'dis' // เปลี่ยนเป็นรายปีแล้ว สลับกลับแท็บการกำจัด
   const { province, setProvince } = useSelection()
-  // ลิงก์ที่มี ?p= ใช้ค่านั้น ไม่มีก็ใช้จังหวัดที่เลือกค้างไว้จากหน้าอื่น
-  const selected = params.get('p') ?? province
+  // ลิงก์ที่มี ?p= ใช้ค่านั้น ไม่มีก็ใช้จังหวัดที่เลือกค้างไว้จากหน้าอื่น (ชื่อที่ไม่มีในข้อมูลไม่นับ)
+  const fromUrl = params.get('p')
+  const selected = fromUrl != null ? (yearly.provinces[fromUrl] ? fromUrl : '') : province
+  // จำจังหวัดจากลิงก์ เฉพาะตอนที่ ?p= เปลี่ยน (ไม่ผูกกับ province เพื่อไม่ให้ปุ่มปิดถูกเลือกกลับ)
   useEffect(() => {
-    const p = params.get('p')
-    if (p && p !== province && yearly.provinces[p]) setProvince(p)
-  }, [params, province, setProvince, yearly])
+    if (fromUrl && yearly.provinces[fromUrl]) setProvince(fromUrl)
+  }, [fromUrl, setProvince, yearly])
 
   const update = useCallback(
     (patch) => {
@@ -95,7 +98,7 @@ export default function Home() {
   const trendVal = (n) =>
     tab === 'rec' ? (n.recycle_tpd / n.waste_tpd) * 100 : tab === 'bl' ? n.backlog_t / n.waste_tpd : (n.improper_tpd / n.waste_tpd) * 100
   const trendTitle = { dis: '% กำจัดไม่ถูกต้อง', g4: '% กำจัดไม่ถูกต้อง', rec: '% นำกลับมาใช้', bl: 'วันตกค้าง (ถ่วงน้ำหนัก)' }[tab]
-  const trendColor = tab === 'rec' ? '#4F86C0' : tab === 'bl' ? '#CF6E26' : '#E08A3C'
+  const trendColor = tab === 'rec' ? SERIES.recycle : tab === 'bl' ? BACKLOG_LEVEL[2] : SERIES.improper
 
   const sel = selected && snaps[selected]
 

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react'
+import { createContext, useCallback, useContext, useMemo, useState } from 'react'
 
 // จังหวัดที่ผู้ใช้เลือกล่าสุด ใช้ร่วมกันทุกหน้า (จำไว้ใน localStorage ด้วย)
 const KEY = 'selectedProvince'
@@ -15,7 +15,8 @@ function readStored() {
 
 export function SelectionProvider({ children }) {
   const [province, setProvinceState] = useState(readStored)
-  const setProvince = (p) => {
+  // ฟังก์ชันคงที่ ใช้ใน dependency ของ effect ได้โดยไม่ทำให้ effect วิ่งซ้ำทุก render
+  const setProvince = useCallback((p) => {
     setProvinceState(p || '')
     try {
       if (p) localStorage.setItem(KEY, p)
@@ -23,8 +24,9 @@ export function SelectionProvider({ children }) {
     } catch {
       // ไม่มี localStorage ก็ยังใช้งานได้ แค่ไม่จำข้ามการรีเฟรช
     }
-  }
-  return <SelectionContext.Provider value={{ province, setProvince }}>{children}</SelectionContext.Provider>
+  }, [])
+  const value = useMemo(() => ({ province, setProvince }), [province, setProvince])
+  return <SelectionContext.Provider value={value}>{children}</SelectionContext.Provider>
 }
 
 export const useSelection = () => useContext(SelectionContext)
