@@ -66,7 +66,11 @@ button { cursor: pointer; }
 .page-title p { margin: 0; font-size: 13px; color: var(--ink2); }
 .header-extra { margin-left: auto; }
 .top-nav a { text-decoration: none; color: var(--ink); }
-.theme-btn { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px; border: none; border-radius: 999px; background: var(--field); font-size: 13px; font-weight: 500; }
+.theme-btn { display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 14px; border: none; border-radius: 12px; background: var(--field); font-size: 14px; font-weight: 500; white-space: nowrap; transition: background-color 0.2s; }
+.theme-btn:hover { background-color: color-mix(in oklab, var(--field) 100%, var(--ink) 6%); }
+/* navbar: ทุกปุ่มสูง 38px มุมโค้งเท่ากัน อยู่กึ่งกลางแนวตั้ง และเมนูหน้ากว้างเท่ากัน */
+.top-nav.seg { align-self: center; display: grid; grid-auto-columns: 1fr; grid-auto-flow: column; }
+.top-nav a { justify-content: center; }
 .theme-icon { width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid currentColor; background: linear-gradient(90deg, currentColor 50%, transparent 50%); }
 
 /* segmented control (เมนูบน + แท็บ) */
@@ -145,6 +149,11 @@ button.back-btn { border: none; align-self: flex-start; }
 .zero-improper { color: oklch(0.55 0.14 150); font-size: 17px; font-weight: 600; letter-spacing: 0; }
 .group-name { font-size: 17px; font-weight: 600; }
 .group-card .kpi-value { font-size: 30px; }
+/* การ์ดกลุ่มกดได้: เน้นกลุ่มนั้นบนแผนที่ */
+button.group-card { display: block; width: 100%; text-align: left; border: 0; font: inherit; color: inherit; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s, background 0.3s; }
+button.group-card:hover { transform: translateY(-2px); }
+button.group-card[aria-pressed='true'] { box-shadow: var(--shadow), 0 0 0 2px var(--group); background: color-mix(in oklab, var(--group) 10%, var(--surface)); }
+@media (prefers-reduced-motion: reduce) { button.group-card { transition: none; } button.group-card:hover { transform: none; } }
 
 /* charts */
 .barv { display: flex; align-items: flex-end; gap: 10px; padding-top: 24px; }
@@ -153,7 +162,8 @@ button.back-btn { border: none; align-self: flex-start; }
 .barv-bar { position: relative; width: 100%; max-width: 44px; min-height: 2px; flex: none; }
 .barv-fill { position: absolute; inset: 0; border-radius: 8px 8px 3px 3px; transition: opacity 0.3s; }
 .barv-text { position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); padding-bottom: 4px; font-size: 12px; color: var(--ink2); white-space: nowrap; }
-.barv-label { font-size: 12px; color: var(--ink2); margin-top: 6px; border-top: 1px solid var(--line); padding-top: 4px; width: 100%; text-align: center; }
+/* สูงเท่ากัน 2 บรรทัดทุกแท่ง ชื่อกลุ่มยาวตัดบรรทัดแล้วฐานแท่งยังตรงกัน */
+.barv-label { font-size: 12px; line-height: 1.4; min-height: calc(2 * 1.4em + 4px); color: var(--ink2); margin-top: 6px; border-top: 1px solid var(--line); padding-top: 4px; width: 100%; text-align: center; }
 
 .donut-wrap { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
 .donut { width: 150px; height: 150px; border-radius: 50%; display: grid; place-items: center; }
@@ -176,11 +186,15 @@ button.back-btn { border: none; align-self: flex-start; }
 .stack { display: flex; gap: 6px; align-items: stretch; }
 .stack-col { flex: 1; display: flex; flex-direction: column; align-items: center; min-width: 0; }
 .stack-top { font-size: 11px; height: 18px; color: oklch(0.58 0.2 27); font-weight: 600; }
-.stack-bar { flex: 1; width: 100%; max-width: 48px; display: flex; flex-direction: column; gap: 2px; }
-.stack-bar > div { color: #fff; font-size: 11px; display: flex; align-items: center; justify-content: center; border-radius: 3px; min-height: 0; }
-.stack-bar > div:first-child { border-radius: 6px 6px 3px 3px; }
-.stack-bar > div:last-child { border-radius: 3px 3px 6px 6px; }
-.stack-label { font-size: 12px; text-align: center; color: var(--ink2); margin-top: 6px; }
+/* แท่งเป็นก้อนเดียวมุมโค้ง ทุกแท่งรูปร่างเท่ากัน ส่วนที่เล็กมาก (เช่น 0.5%) เป็นแถบบางในแท่ง ไม่ทำให้แท่งดูสั้น */
+.stack-bar { flex: 1; width: 100%; max-width: 56px; display: flex; flex-direction: column; border-radius: 8px; overflow: hidden; }
+.stack-bar > div { color: #fff; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; min-height: 0; }
+.stack-bar > div + div { box-shadow: inset 0 1px 0 var(--surface); }
+/* การ์ดที่ให้กราฟยืดเต็มความสูง (สูงเท่าการ์ดข้างๆ) */
+.fill-card { display: flex; flex-direction: column; }
+.fill-card .stack { flex: 1 1 220px; }
+/* สูงเท่ากัน 2 บรรทัด ชื่อกลุ่มยาวตัดบรรทัดแล้วแท่งยังยาวเท่ากัน */
+.stack-label { font-size: 12px; line-height: 1.4; min-height: calc(2 * 1.4em); text-align: center; color: var(--ink2); margin-top: 6px; }
 .stack-sub { margin-top: 4px; }
 .stack-sub .badge { padding: 2px 8px 2px 6px; font-size: 11px; gap: 4px; }
 .stack-sub .badge-dot { width: 7px; height: 7px; }
@@ -290,4 +304,49 @@ body.dark .map-canvas .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) 
   .col-right { position: static; }
   .map-panel { height: 70vh; min-height: 460px; }
   .kpi-value { font-size: 28px; }
+}
+
+/* ---------- Motion: นุ่มๆ สั้นๆ แบบ Apple ----------
+   ใช้ fill-mode backwards (ไม่ใช่ both) เพื่อไม่ให้ค่า transform ค้างทับ :hover / :active */
+:root { --ease: cubic-bezier(0.25, 0.1, 0.25, 1); --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1); }
+
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } }
+@keyframes fade { from { opacity: 0; } }
+@keyframes pop { from { opacity: 0; transform: scale(0.96); } }
+@keyframes reveal-up { from { clip-path: inset(100% 0 0 0); } }
+@keyframes reveal-right { from { clip-path: inset(0 100% 0 0); } }
+
+/* เข้าหน้า: การ์ดค่อยๆ ลอยขึ้นทีละใบ */
+.card, .map-panel, .section-head { animation: rise 0.5s var(--ease-out) backwards; }
+.map-panel { animation-name: fade; animation-duration: 0.6s; }
+.col-left > :nth-child(2), .grid-2 > :nth-child(2), .grid-3 > :nth-child(2), .grid-4 > :nth-child(2) { animation-delay: 0.05s; }
+.col-left > :nth-child(3), .grid-3 > :nth-child(3), .grid-4 > :nth-child(3) { animation-delay: 0.1s; }
+.col-left > :nth-child(n + 4), .grid-4 > :nth-child(4) { animation-delay: 0.15s; }
+
+/* กราฟ: แท่งค่อยๆ โผล่ตอนเข้าหน้า และเลื่อนนุ่มๆ เวลาค่าเปลี่ยน (เปลี่ยนปี/แท็บ) */
+.barv-bar { transition: height 0.5s var(--ease-out); }
+.barv-fill { animation: reveal-up 0.6s var(--ease-out) backwards 0.1s; }
+.barv-text { animation: fade 0.4s var(--ease) backwards 0.4s; }
+.stack-bar { animation: reveal-up 0.6s var(--ease-out) backwards 0.1s; }
+.stack-bar > div { transition: height 0.5s var(--ease-out); }
+.rank-track > span { animation: reveal-right 0.6s var(--ease-out) backwards 0.1s; }
+.donut { animation: pop 0.5s var(--ease-out) backwards 0.1s; }
+.line-chart polyline, .line-chart circle { animation: fade 0.5s var(--ease) backwards 0.1s; }
+
+/* การ์ดจังหวัดบนแผนที่ / รายการสัญลักษณ์ / แถวตาราง */
+.info-card { animation: pop 0.25s var(--ease-out) backwards; transform-origin: top left; }
+.legend-list { animation: fade 0.18s var(--ease) backwards; }
+.data-table tbody tr { animation: fade 0.25s var(--ease) backwards; }
+
+/* กดแล้วยุบนิดๆ */
+.btn, .tabs button, .seg a, .tab-link, .theme-btn, .ui-select-btn, .legend-list button, .search-hits button {
+  transition-property: background-color, box-shadow, opacity, transform; transition-duration: 0.2s; transition-timing-function: var(--ease);
+}
+.btn:active:not(:disabled), .tabs button:active, .seg a:active, .theme-btn:active, .ui-select-btn:active, .legend-list button:active { transform: scale(0.97); }
+button.group-card:active { transform: scale(0.98); }
+.card, .map-panel, .info-card { transition: background-color 0.3s var(--ease), box-shadow 0.2s var(--ease), transform 0.2s var(--ease); }
+
+/* ผู้ใช้ที่ตั้งลดการเคลื่อนไหว: ปิดทั้งหมด */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-delay: 0s !important; transition-duration: 0.01ms !important; }
 }
