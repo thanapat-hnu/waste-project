@@ -82,7 +82,7 @@ function ProvinceDetail({ selected, go }) {
       <Card>
         <div className="muted">{p.region}</div>
         <h2 className="province-title">{selected}</h2>
-        <Badge color={clusterColor(c)}>C{c} {yearly.cluster_names[c]}</Badge>
+        <Badge color={clusterColor(c)}>กลุ่ม {c} {yearly.cluster_names[c]}</Badge>
         {warnings.length > 0 && (
           <div className="warn-box">
             <b>ข้อควรตรวจสอบข้อมูล</b>
@@ -105,7 +105,7 @@ function ProvinceDetail({ selected, go }) {
           columns={YEARS.map((y, i) => ({
             label: String(y),
             top: fmtPct(p.improper_pct[i]),
-            sub: <Badge color={clusterColor(p.cluster[i])}>C{p.cluster[i]}</Badge>,
+            sub: <Badge color={clusterColor(p.cluster[i])}>กลุ่ม {p.cluster[i]}</Badge>,
             parts: [
               { name: 'รีไซเคิล', value: p.recycle_pct[i], color: SERIES.recycle },
               { name: 'กำจัดถูกต้อง', value: p.proper_pct[i], color: SERIES.proper },
@@ -122,7 +122,7 @@ function ProvinceDetail({ selected, go }) {
               <div className="small"><b>{m.name}</b></div>
               {[
                 ['จังหวัดนี้', m.mine, 'var(--ink)'],
-                [`กลุ่ม C${c}`, groupPct(m.k), clusterColor(c)],
+                [`กลุ่ม ${c}`, groupPct(m.k), clusterColor(c)],
                 ['ทั้งประเทศ', natPct(m.nk), 'var(--ink2)'],
               ].map(([label, v, color]) => (
                 <div key={label} className="compare-row">
