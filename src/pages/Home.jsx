@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
+import { usePageTitle } from '../lib/usePageTitle'
 import { useData } from '../lib/DataContext'
 import { useSelection } from '../lib/SelectionContext'
 import { YEARS } from '../lib/data'
@@ -30,6 +31,7 @@ export default function Home() {
   // ลิงก์ที่มี ?p= ใช้ค่านั้น ไม่มีก็ใช้จังหวัดที่เลือกค้างไว้จากหน้าอื่น (ชื่อที่ไม่มีในข้อมูลไม่นับ)
   const fromUrl = params.get('p')
   const selected = fromUrl != null ? (yearly.provinces[fromUrl] ? fromUrl : '') : province
+  usePageTitle('ภาพรวม')
   // จำจังหวัดจากลิงก์ เฉพาะตอนที่ ?p= เปลี่ยน (ไม่ผูกกับ province เพื่อไม่ให้ปุ่มปิดถูกเลือกกลับ)
   useEffect(() => {
     if (fromUrl && yearly.provinces[fromUrl]) setProvince(fromUrl)

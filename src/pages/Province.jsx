@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
+import { usePageTitle } from '../lib/usePageTitle'
+import { provinceActions } from '../lib/policy'
 import { useData } from '../lib/DataContext'
 import { useSelection } from '../lib/SelectionContext'
 import { YEARS } from '../lib/data'
@@ -21,6 +23,7 @@ export default function Province() {
   const { province, setProvince } = useSelection()
   // ลำดับ: ชื่อใน URL → จังหวัดที่เลือกจากหน้าอื่น (ไม่มีค่าเริ่มต้น ให้ผู้ใช้เลือกเอง)
   const selected = [name, province].find((n) => n && yearly.provinces[n])
+  usePageTitle(selected || 'ค้นหาจังหวัด')
   useEffect(() => {
     if (name && yearly.provinces[name]) setProvince(name)
   }, [name, setProvince, yearly])
@@ -38,7 +41,8 @@ export default function Province() {
 }
 
 function ProvinceDetail({ selected, go }) {
-  const { yearly, names } = useData()
+  const data = useData()
+  const { yearly, names } = data
   const p = yearly.provinces[selected]
   const colorOf = useCallback((n) => (n === selected ? CLUSTER5[p.cluster[LAST] - 1] : MUTED), [selected, p])
 
@@ -61,13 +65,8 @@ function ProvinceDetail({ selected, go }) {
     'GPP ปี 2567–2568 เป็นค่าประมาณ',
   ].filter(Boolean)
 
-  // สิ่งที่ควรทำ (สร้างจากกฎ)
-  const touristsPerCapita = last.tourists && last.population ? last.tourists / last.population : 0
-  const actions = [
-    p.improper_pct[LAST] > natPct('improper_tpd') && 'ขยะกำจัดไม่ถูกต้องสูงกว่าค่าประเทศ → ลงทุนระบบกำจัดที่ถูกต้อง',
-    properZeroYears.length > 0 && 'กำจัดถูกต้องเป็น 0 บางปี → ตรวจสอบการรายงานข้อมูล',
-    touristsPerCapita > 10 && 'นักท่องเที่ยวสูงเมื่อเทียบกับประชากร → เตรียมรองรับภาระขยะช่วงท่องเที่ยว',
-  ].filter(Boolean)
+  // สิ่งที่ควรทำ: กฎจากข้อมูลของจังหวัดนี้ พร้อมเหตุผลที่เป็นตัวเลข (ดู lib/policy.js)
+  const actions = provinceActions(data, selected)
 
   const compare = [
     { name: 'นำกลับมาใช้', k: 'waste_recycled_tpd', nk: 'recycle_tpd', mine: p.recycle_pct[LAST] },
@@ -135,7 +134,18 @@ function ProvinceDetail({ selected, go }) {
           ))}
         </Card>
         <Card title="สิ่งที่ควรทำ">
-          {actions.length ? <ul className="small">{actions.map((a) => <li key={a}>{a}</li>)}</ul> : <p className="muted small">ไม่มีประเด็นเด่น</p>}
+          <ol className="policy-list">
+            {actions.map(([title, why]) => (
+              <li key={title}>
+                <b>{title}</b>
+                <span className="muted small">{why}</span>
+              </li>
+            ))}
+          </ol>
+          <p className="muted small policy-note">
+            สร้างจากข้อมูลของจังหวัดนี้เทียบกับทั้งประเทศ (ปี {YEARS[LAST]}) และทิศทาง 7 ปี ·{' '}
+            <Link to={`/clusters?c=${c}&year=${YEARS[LAST]}`}>ดูข้อเสนอของกลุ่ม {c}</Link>
+          </p>
         </Card>
       </div>
     </>

@@ -2,6 +2,7 @@ import { Link, NavLink, useLocation, useSearchParams } from 'react-router-dom'
 import { YEARS } from '../lib/data'
 import { useSelection } from '../lib/SelectionContext'
 import { useTheme } from '../lib/theme'
+import HangingBin from './HangingBin'
 
 export function Header({ title, subtitle, children }) {
   const { province } = useSelection()
@@ -23,7 +24,7 @@ export function Header({ title, subtitle, children }) {
         <div className="header-extra">{children}</div>
         <nav className="top-nav seg">
           {/* พาจังหวัดที่เลือกอยู่ติดไปด้วย */}
-          <NavLink to="/" end>ภาพรวม</NavLink>
+          <NavLink to="/overview">ภาพรวม</NavLink>
           <NavLink to={province ? `/province/${encodeURIComponent(province)}` : '/province'}>ค้นหาจังหวัด</NavLink>
           <NavLink to={province ? `/trend?p=${encodeURIComponent(province)}` : '/trend'}>การเปลี่ยนแปลง</NavLink>
           {modelsYear ? (
@@ -37,6 +38,7 @@ export function Header({ title, subtitle, children }) {
           <span>{dark ? 'โหมดสว่าง' : 'โหมดมืด'}</span>
         </button>
       </div>
+      <HangingBin />
     </header>
   )
 }
