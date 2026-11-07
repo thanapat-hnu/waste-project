@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
+import { usePageTitle } from '../lib/usePageTitle'
 import { useData } from '../lib/DataContext'
 import { useSelection } from '../lib/SelectionContext'
 import { YEARS } from '../lib/data'
@@ -30,6 +31,7 @@ export default function Home() {
   // ลิงก์ที่มี ?p= ใช้ค่านั้น ไม่มีก็ใช้จังหวัดที่เลือกค้างไว้จากหน้าอื่น (ชื่อที่ไม่มีในข้อมูลไม่นับ)
   const fromUrl = params.get('p')
   const selected = fromUrl != null ? (yearly.provinces[fromUrl] ? fromUrl : '') : province
+  usePageTitle('ภาพรวม')
   // จำจังหวัดจากลิงก์ เฉพาะตอนที่ ?p= เปลี่ยน (ไม่ผูกกับ province เพื่อไม่ให้ปุ่มปิดถูกเลือกกลับ)
   useEffect(() => {
     if (fromUrl && yearly.provinces[fromUrl]) setProvince(fromUrl)
@@ -198,7 +200,7 @@ export default function Home() {
       </div>
 
       <div className="grid-2">
-        <Card title="ขยะกำจัดไม่ถูกต้องแยกตามกลุ่ม">
+        <Card title="ขยะกำจัดผิดวิธี มาจากกลุ่มไหนมากสุด">
           <BarChartV
             ariaLabel="ขยะกำจัดไม่ถูกต้องแยกตามกลุ่ม"
             items={improperGroups.map((g) => ({
@@ -208,7 +210,7 @@ export default function Home() {
           />
           <p className="muted small">ตัน/วัน (% ของทั้งประเทศ){isAvg && ' · แบ่งตามกลุ่มเฉลี่ย 4 กลุ่ม'}</p>
         </Card>
-        <Card title={`สัดส่วนจังหวัด · ${TAB_LABELS[tab]}`}>
+        <Card title={`แต่ละระดับมีกี่จังหวัด · ${TAB_LABELS[tab]}`}>
           <Donut
             ariaLabel="สัดส่วนจังหวัด"
             center={<><b>77</b><span>จังหวัด</span></>}
@@ -219,7 +221,7 @@ export default function Home() {
 
       {/* แนวโน้มรายปีแสดงเฉพาะโหมดรายปี (โหมดเฉลี่ย 7 ปีไม่แสดง) */}
       {!isAvg && (
-        <Card title={`${trendTitle} ทั้งประเทศ 7 ปี`}>
+        <Card title={`${trendTitle} ทั้งประเทศ 7 ปีขยับไปทางไหน`}>
           <BarChartV
             ariaLabel={`${trendTitle} รายปี`}
             items={YEARS.map((y) => {
@@ -278,7 +280,7 @@ export default function Home() {
 
   return (
     <>
-      <Header title="ภาพรวมการจัดการขยะ 77 จังหวัด" subtitle="ผลการจัดกลุ่มจังหวัด ปี 2562–2568">
+      <Header title="ขยะ 77 จังหวัด ไปจบที่ไหน" subtitle="ส่องการกำจัด รีไซเคิล และขยะตกค้าง ปี 2562–2568">
         <Select label="เลือกปี" align="right" value={year} onChange={(v) => update({ year: v })} options={YEAR_OPTIONS} />
       </Header>
       <TwoColumn top={tabs} left={left} right={right} />
@@ -289,9 +291,9 @@ export default function Home() {
 // 10 จังหวัดที่ต้องปรับปรุงตามแท็บ (ค่าเฉลี่ย 7 ปีจาก raw_yearly), dir = -1 มากไปน้อย / 1 น้อยไปมาก
 // max = null ให้แท่งยาวเทียบอันดับ 1 (วันตกค้างบางจังหวัดหลักพัน)
 const TOP10 = {
-  dis: { title: '10 จังหวัดกำจัดไม่ถูกต้องสูงสุด', key: 'improper_pct', dir: -1, max: 100, fmt: fmtPct },
-  rec: { title: '10 จังหวัดรีไซเคิลต่ำสุด', key: 'recycle_pct', dir: 1, max: 100, fmt: fmtPct },
-  bl: { title: '10 จังหวัดขยะตกค้างมากสุด', key: 'backlog_days', dir: -1, max: null, fmt: (v) => `${fmtDays(v)} วัน` },
+  dis: { title: '10 จังหวัดกำจัดขยะผิดวิธีมากที่สุด', key: 'improper_pct', dir: -1, max: 100, fmt: fmtPct },
+  rec: { title: '10 จังหวัดรีไซเคิลน้อยที่สุด', key: 'recycle_pct', dir: 1, max: 100, fmt: fmtPct },
+  bl: { title: '10 จังหวัดขยะค้างนานที่สุด', key: 'backlog_days', dir: -1, max: null, fmt: (v) => `${fmtDays(v)} วัน` },
 }
 
 function Avg4Section({ tab, focus, onPick }) {
@@ -310,7 +312,7 @@ function Avg4Section({ tab, focus, onPick }) {
   return (
     <>
       <div className="section-head">
-        <h2>สรุป 4 กลุ่ม (เฉลี่ย 7 ปี)</h2>
+        <h2>4 กลุ่มจังหวัด ต่างกันแค่ไหน (เฉลี่ย 7 ปี)</h2>
         <span className="muted small">กดการ์ดเพื่อเน้นกลุ่มบนแผนที่</span>
       </div>
       <div className="grid-4">
@@ -339,7 +341,7 @@ function Avg4Section({ tab, focus, onPick }) {
           />
           <p className="muted small">ค่าเฉลี่ย 7 ปี · สีแท่ง = กลุ่มการกำจัด</p>
         </Card>
-        <Card title="ขยะไปไหนบ้าง (แยกตามกลุ่ม)" className="fill-card">
+        <Card title="แต่ละกลุ่ม ขยะไปจบที่ไหน" className="fill-card">
           <SeriesLegend items={[{ name: 'กำจัดถูก', color: FLOW.proper }, { name: 'รีไซเคิล', color: FLOW.recycle }, { name: 'กำจัดผิด', color: FLOW.improper }]} />
           <StackedBar100
             height={null}

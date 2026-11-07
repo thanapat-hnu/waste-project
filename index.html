@@ -3,13 +3,34 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <!-- ฟอนต์ทั้งเว็บ: IBM Plex Sans Thai (มีทั้งตัวไทยและอังกฤษ/ตัวเลข น้ำหนักสูงสุด 700) -->
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
     <title>ขยะจังหวัด 77</title>
+    <meta name="theme-color" content="#120f0e" />
+    <meta name="description" content="ขยะของเราไปอยู่ที่ไหน? ข้อมูลการจัดการขยะมูลฝอย 77 จังหวัด ปี 2562–2568 ทั้งการนำกลับมาใช้ กำจัดถูกต้อง กำจัดไม่ถูกต้อง และขยะตกค้าง พร้อมแผนที่และกลุ่มจังหวัด" />
+    <!-- ตัวอย่างลิงก์ตอนแชร์ (Facebook / LINE / X) · %SITE_URL% แทนด้วย VITE_SITE_URL ตอน build (vite.config.js) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="ขยะจังหวัด 77" />
+    <meta property="og:locale" content="th_TH" />
+    <meta property="og:title" content="ขยะของเราไปอยู่ที่ไหน? · ขยะจังหวัด 77" />
+    <meta property="og:description" content="ข้อมูลการจัดการขยะมูลฝอย 77 จังหวัด ปี 2562–2568 พร้อมแผนที่ กลุ่มจังหวัด และทิศทางการเปลี่ยนแปลง" />
+    <meta property="og:url" content="%SITE_URL%/" />
+    <meta property="og:image" content="%SITE_URL%/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="ขยะของเราไปอยู่ที่ไหน? ข้อมูลขยะ 77 จังหวัด" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="ขยะของเราไปอยู่ที่ไหน? · ขยะจังหวัด 77" />
+    <meta name="twitter:image" content="%SITE_URL%/og-image.png" />
   </head>
-  <body>
+  <!-- เว็บเริ่มที่โหมดมืด (theme.js จะแก้ตามที่ผู้ใช้เลือกไว้) -->
+  <body class="dark">
+    <!-- ใช้โหมดที่ผู้ใช้เลือกไว้ตั้งแต่เฟรมแรก (หน้าโหลดจะได้ไม่กะพริบผิดโหมด) -->
+    <script>try { if (localStorage.getItem('theme') === 'light') document.body.classList.remove('dark') } catch (e) {}</script>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

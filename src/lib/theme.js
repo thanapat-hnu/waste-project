@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
 
-// โหมดสว่าง/มืด: เริ่มตามระบบ ถ้ากดเปลี่ยนเองจะจำไว้
+// โหมดสว่าง/มืด: เริ่มที่โหมดมืด (ธีมหลักของเว็บ) ถ้ากดเปลี่ยนเองจะจำไว้
 const KEY = 'theme'
-const systemDark = () => window.matchMedia?.('(prefers-color-scheme: dark)').matches
 
 function readStored() {
   try {
@@ -14,15 +13,7 @@ function readStored() {
 
 export function useTheme() {
   const [choice, setChoice] = useState(readStored)
-  const [sys, setSys] = useState(systemDark)
-  const dark = choice ? choice === 'dark' : sys
-
-  useEffect(() => {
-    const mq = window.matchMedia?.('(prefers-color-scheme: dark)')
-    const on = (e) => setSys(e.matches)
-    mq?.addEventListener('change', on)
-    return () => mq?.removeEventListener('change', on)
-  }, [])
+  const dark = choice !== 'light'
 
   useEffect(() => {
     document.body.classList.toggle('dark', dark)

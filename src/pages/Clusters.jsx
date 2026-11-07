@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { usePageTitle } from '../lib/usePageTitle'
 import { useData } from '../lib/DataContext'
 import { YEARS } from '../lib/data'
 import { CLUSTER5, CLUSTER5_FG, DELTA, GROUP4, MUTED } from '../lib/colors'
@@ -8,12 +9,14 @@ import { Badge, Card, Header, Tabs, TwoColumn } from '../components/Layout'
 import { BarChartV, KpiCard } from '../components/charts'
 import ThailandMap from '../components/ThailandMap'
 import Select from '../components/Select'
+import { groupHighlights, policiesFor } from '../lib/policy'
 
 const LAST = YEARS.length - 1
 const YEAR_OPTIONS = [{ value: 'avg', label: 'เฉลี่ย 7 ปี' }, ...YEARS.map((y) => ({ value: y, label: String(y) }))]
 
 export default function Clusters() {
-  const { yearly, avg4, names } = useData()
+  const data = useData()
+  const { yearly, avg4, names } = data
   const [params, setParams] = useSearchParams()
   const navigate = useNavigate()
   // ปีตามที่เลือกในหน้าแรก (?year=) ไม่มีหรือไม่ถูกต้องใช้ปีล่าสุด
@@ -30,6 +33,7 @@ export default function Clusters() {
   // เลขกลุ่มที่ไม่มีอยู่จริง (เช่น c=9 หรือ c=5 ตอนเฉลี่ย) ใช้กลุ่มสุดท้ายแทน
   const cParam = Number(params.get('c'))
   const c = groupIds.includes(cParam) ? cParam : groupIds.at(-1)
+  usePageTitle(`กลุ่ม ${c} ${groupNames[c] ?? ''}`.trim())
 
   // กลุ่มของแต่ละจังหวัดในปีที่เลือก
   const current = useMemo(() => {
@@ -88,16 +92,31 @@ export default function Clusters() {
   const colorOf = useCallback((n) => colors[current[n] - 1] || MUTED, [current, colors])
   const keyOf = useCallback((n) => current[n], [current])
 
+  // ข้อเสนอ 3 ข้อของกลุ่มที่เลือก ตัวเลขในเหตุผลคิดจากข้อมูลทั้ง 7 ปีของกลุ่ม
+  const policies = useMemo(() => policiesFor(data, c, isAvg), [data, c, isAvg])
+  const highlights = useMemo(() => (isAvg ? null : groupHighlights(data, c)), [data, c, isAvg])
   const policy = (
-    <Card title="ประเด็นนโยบายที่แนะนำ">
-      <p className="muted small">รอข้อความจากทีม (ต้นแบบเดิมเขียนจากผลรอบเก่า)</p>
+    <Card title="ควรแก้ตรงไหนก่อน">
+      {policies.length ? (
+        <ol className="policy-list">
+          {policies.map(([title, why]) => (
+            <li key={title}>
+              <b>{title}</b>
+              <span className="muted small">{why}</span>
+            </li>
+          ))}
+        </ol>
+      ) : (
+        <p className="muted small">ยังไม่มีข้อเสนอสำหรับกลุ่มนี้</p>
+      )}
+      <p className="muted small policy-note">ข้อเสนอจากการอ่านตัวเลขในข้อมูล ควรให้ผู้เชี่ยวชาญตรวจทานก่อนนำไปใช้</p>
     </Card>
   )
 
   const tabs = (
     <div className="top-stack">
       {/* กลับหน้าหลักโดยคงปีที่เลือกไว้ */}
-      <Link to={`/?year=${year}`} className="back-btn">
+      <Link to={`/overview?year=${year}`} className="back-btn">
         <span aria-hidden>‹</span> กลับหน้าหลัก
       </Link>
       <Tabs
@@ -116,9 +135,30 @@ export default function Clusters() {
           <span className="muted">อันดับ {c} จาก {groupIds.length}{isAvg && ' · กลุ่มเฉลี่ย 7 ปี'}</span>
         </div>
         <h2 className="province-title">{groupNames[c]}</h2>
-        <p className="small">
-          {isAvg ? 'ค่าเฉลี่ย 7 ปีของจังหวัดในกลุ่มนี้' : 'จังหวัด-ปีในกลุ่มนี้'} (ถ่วงตามปริมาณขยะ): นำกลับมาใช้ {fmtPct(stats.recycle)} · กำจัดถูกต้อง {fmtPct(stats.proper)} · กำจัดไม่ถูกต้อง {fmtPct(stats.improper)}
-        </p>
+        {isAvg ? (
+          <p className="small">
+            ค่าเฉลี่ย 7 ปีของจังหวัดในกลุ่มนี้ (ถ่วงตามปริมาณขยะ): นำกลับมาใช้ {fmtPct(stats.recycle)} · กำจัดถูกต้อง {fmtPct(stats.proper)} · กำจัดไม่ถูกต้อง {fmtPct(stats.improper)}
+          </p>
+        ) : (
+          // จุดเด่น/จุดด้อยที่ใช้ตั้งชื่อกลุ่ม เทียบกับกลุ่มอื่นจากข้อมูลทั้ง 7 ปี
+          <div className="highlights">
+            {[['จุดเด่น', highlights.strengths, 'good'], ['จุดด้อย', highlights.weaknesses, 'bad']].map(([label, items, tone]) =>
+              items.length ? (
+                <div key={label} className={`hl-row ${tone}`}>
+                  <span className="hl-label">{label}</span>
+                  <div className="hl-items">
+                    {items.map((m) => (
+                      <span key={m.k} className="hl-chip">
+                        {m.label} <b>{m.value}</b> <span className="muted">· {m.note}</span>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ) : null,
+            )}
+            <span className="muted small">เทียบกับกลุ่มอื่น จากทุกจังหวัด-ปีที่อยู่กลุ่มนี้ตลอด 7 ปี</span>
+          </div>
+        )}
         <div className="grid-3">
           <KpiCard label={`จังหวัด${yearLabel}`} value={stats.members.length} />
           {isAvg ? (
@@ -137,7 +177,7 @@ export default function Clusters() {
 
       {isAvg ? (
         <>
-          <Card title={`จังหวัดในกลุ่ม (${yearLabel}) · ${stats.members.length} จังหวัด`}>
+          <Card title={`ใครอยู่ในกลุ่มนี้บ้าง · ${stats.members.length} จังหวัด (${yearLabel})`}>
             {/* key ทำให้กลับไปหน้า 1 เมื่อเปลี่ยนกลุ่ม */}
             <AvgProvinceTable key={c} members={stats.members} />
           </Card>
@@ -145,13 +185,13 @@ export default function Clusters() {
         </>
       ) : (
         <>
-          <Card title={`จังหวัดในกลุ่ม (${yearLabel}) · ${stats.members.length} จังหวัด`}>
+          <Card title={`ใครอยู่ในกลุ่มนี้บ้าง · ${stats.members.length} จังหวัด (${yearLabel})`}>
             <p className="muted small card-sub">เส้นทางกลุ่มการกำจัด 7 ปีของแต่ละจังหวัด · ช่องสีเต็ม = ปีที่อยู่กลุ่ม {c}</p>
             <YearlyPathTable key={`${c}-${year}`} members={stats.members} c={c} year={year} />
           </Card>
           <div className="grid-2">
           {policy}
-          <Card title="จำนวนจังหวัดในกลุ่มรายปี">
+          <Card title="7 ปี กลุ่มนี้ใหญ่ขึ้นหรือเล็กลง">
             <BarChartV
               ariaLabel="จำนวนจังหวัดในกลุ่มรายปี"
               items={YEARS.map((y, i) => ({ label: String(y), value: stats.perYear[i], color: CLUSTER5[c - 1], dim: y !== year, text: stats.perYear[i] }))}
@@ -165,7 +205,7 @@ export default function Clusters() {
 
   return (
     <>
-      <Header title="กลุ่มจังหวัด" subtitle={isAvg ? 'กลุ่มเฉลี่ย 7 ปี 4 กลุ่ม' : 'กลุ่มการกำจัดรายปี 5 กลุ่ม'}>
+      <Header title="จังหวัดไหน อยู่กลุ่มเดียวกัน" subtitle={isAvg ? 'แบ่ง 77 จังหวัดเป็น 4 กลุ่ม จากค่าเฉลี่ย 7 ปี' : 'แบ่งจังหวัดเป็น 5 กลุ่ม ตามการกำจัดขยะรายปี'}>
         <Select label="เลือกปี" align="right" value={year} onChange={(v) => update({ year: v })} options={YEAR_OPTIONS} />
       </Header>
       <TwoColumn
@@ -191,13 +231,15 @@ export default function Clusters() {
 const PAGE_SIZE = 5
 const byThai = (a, b) => a.localeCompare(b, 'th')
 const DEFAULT_SORT = { key: 'name', dir: 1 }
+// ตารางเฉลี่ย 7 ปี เริ่มเรียงจากกำจัดไม่ถูกต้องมากไปน้อย
+const AVG_DEFAULT_SORT = { key: 'improper_pct', dir: -1 }
 
 // ตัวกรอง/การเรียง/แบ่งหน้าที่ใช้ร่วมกันของตารางจังหวัดในกลุ่ม
-function useTableControls(all) {
+function useTableControls(all, defaultSort = DEFAULT_SORT) {
   const [page, setPage] = useState(0)
   const [q, setQ] = useState('')
   const [region, setRegion] = useState('')
-  const [sort, setSort] = useState(DEFAULT_SORT)
+  const [sort, setSort] = useState(defaultSort)
 
   const regions = [...new Set(all.map((r) => r.region))].sort(byThai)
   const filtered = all
@@ -223,11 +265,11 @@ function useTableControls(all) {
     setPage,
     // คอลัมน์ข้อความเริ่มเรียง ก→ฮ, คอลัมน์ตัวเลขเริ่มจากมากไปน้อย
     toggleSort: (key) => reset(setSort)(sort.key === key ? { key, dir: -sort.dir } : { key, dir: typeof all[0]?.[key] === 'string' ? 1 : -1 }),
-    dirty: q !== '' || region !== '' || sort.key !== DEFAULT_SORT.key || sort.dir !== DEFAULT_SORT.dir,
+    dirty: q !== '' || region !== '' || sort.key !== defaultSort.key || sort.dir !== defaultSort.dir,
     clearAll: () => {
       setQ('')
       setRegion('')
-      setSort(DEFAULT_SORT)
+      setSort(defaultSort)
       setPage(0)
     },
   }
@@ -288,7 +330,7 @@ const AVG_COLUMNS = [
 // ตารางจังหวัดในกลุ่มเฉลี่ย 7 ปี: กรองตามชื่อ/ภาค กดหัวคอลัมน์เพื่อเรียง แบ่งหน้าละ 5 จังหวัด
 function AvgProvinceTable({ members }) {
   const { avg4 } = useData()
-  const t = useTableControls(members.map((n) => ({ name: n, ...avg4.provinces[n] })))
+  const t = useTableControls(members.map((n) => ({ name: n, ...avg4.provinces[n] })), AVG_DEFAULT_SORT)
   return (
     <>
       <TableToolbar t={t} idPrefix="avg" />
