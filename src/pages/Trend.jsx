@@ -155,6 +155,18 @@ function TrendDetail({ selected, onBack }) {
         </div>
       </Card>
 
+      {/* คำอธิบายวิธีอ่านหน้านี้ กดย่อ/ขยายได้ */}
+      <details className="card guide">
+        <summary>อ่านผลให้เข้าใจ <span className="muted small">กดเพื่อดูวิธีอ่านหน้านี้</span></summary>
+        <ul className="small">
+          <li><b>กราฟเส้น</b> คือ % จริงของแต่ละปี ใช้ดูว่าขึ้นลงอย่างไรในแต่ละปี</li>
+          <li><b>ทิศทาง 3 ด้าน และแท่ง Slope</b> สรุปทิศทางโดยรวมตลอด 7 ปี ไม่ได้แปลว่าเพิ่มหรือลดทุกปี</li>
+          <li><b>สี</b> เขียว = ดีขึ้น · แดง = แย่ลง · ด้าน “กำจัดไม่ถูกต้อง” ถ้าลดลงถือว่าดีขึ้น</li>
+          <li><b>แท่ง Slope กับตัวเลข “จุด%/ปี” คิดคนละแบบ</b> แท่งมาจากค่าที่ใช้จัดกลุ่ม (ปรับสเกลแล้ว) ส่วนตัวเลขคิดจาก % จริง บางจังหวัดแท่งยาวแต่ตัวเลขใกล้ 0 ได้</li>
+          <li><b>กลุ่มการเปลี่ยนแปลง</b> บอกทิศทาง ไม่ใช่คะแนนดี/แย่ และเป็นคนละชุดกับกลุ่มการกำจัดในหน้าแรก</li>
+        </ul>
+      </details>
+
       <Card title="สัดส่วนการจัดการขยะรายปี (% จริง)">
         <SeriesLegend items={METRICS} />
         <LineChart
@@ -170,7 +182,8 @@ function TrendDetail({ selected, onBack }) {
           {METRICS.map((m, i) => {
             const v = t.slope_yj[i]
             const good = m.higherIsBetter ? v > 0 : v < 0
-            const color = Math.abs(v) < 0.02 ? 'var(--ink2)' : good ? SERIES.recycle : SERIES.improper
+            // สีเดียวกับกล่องทิศทาง 3 ด้าน: เขียว = ดีขึ้น, แดง = แย่ลง
+            const color = Math.abs(v) < 0.02 ? 'var(--ink2)' : good ? DELTA.better : DELTA.worse
             const w = (Math.min(Math.abs(v), SLOPE_SCALE) / SLOPE_SCALE) * 50
             const meanX = 50 + (Math.max(-SLOPE_SCALE, Math.min(SLOPE_SCALE, groupMean[i])) / SLOPE_SCALE) * 50
             return (
@@ -186,15 +199,7 @@ function TrendDetail({ selected, onBack }) {
             )
           })}
         </div>
-        <p className="muted small">ขีดดำ = ค่าเฉลี่ยของกลุ่ม · น้ำเงิน = ดีขึ้น · ส้ม = แย่ลง (กำจัดไม่ถูกต้อง: ลดลง = ดี)</p>
-      </Card>
-
-      <Card title="อ่านผลให้เข้าใจ">
-        <ul className="small">
-          <li><b>กราฟเส้น</b> แสดง % จริงของแต่ละปี</li>
-          <li><b>Slope &gt; 0</b> ค่านั้นเพิ่มขึ้นตลอดช่วง 7 ปี · <b>Slope &lt; 0</b> ค่านั้นลดลง</li>
-          <li>กลุ่มการเปลี่ยนแปลงบอก <b>ทิศทาง</b> ไม่ใช่คะแนนดี/แย่ และเป็นคนละชุดกับกลุ่มการกำจัดในหน้าแรก</li>
-        </ul>
+        <p className="muted small">ขีดดำ = ค่าเฉลี่ยของกลุ่ม · เขียว = ดีขึ้น · แดง = แย่ลง (กำจัดไม่ถูกต้อง: ลดลง = ดี)</p>
       </Card>
 
       <Card title="ข้อมูลจริง 7 ปี">

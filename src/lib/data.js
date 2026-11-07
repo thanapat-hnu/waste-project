@@ -2,7 +2,6 @@
 import { supabase } from './supabase'
 
 export const YEARS = [2562, 2563, 2564, 2565, 2566, 2567, 2568]
-
 async function fetchAll(table) {
   const { data, error } = await supabase.from(table).select('*').range(0, 9999)
   if (error) throw new Error(`${table}: ${error.message}`)
@@ -51,6 +50,7 @@ export async function loadData() {
 
   const resultOf = new Map(resYearly.map((r) => [`${r.province}|${r.year}`, r]))
   const clusterOf = new Map(resYearly.map((r) => [`${r.province}|${r.year}`, r.cluster]))
+  // ชื่อกลุ่มรายปีอ่านจากคอลัมน์ level_disposal ใน Supabase (แก้ชื่อที่ Supabase ได้เลย ไม่ต้องแก้โค้ด)
   const clusterNames = {}
   resYearly.forEach((r) => (clusterNames[r.cluster] ??= r.level_disposal))
   const clusterIds = Object.keys(clusterNames).map(Number).sort((a, b) => a - b)
