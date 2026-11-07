@@ -16,9 +16,9 @@ body {
   --focus: var(--accent);
   --glass: rgba(255, 253, 250, 0.84);
   --seg: #ffffff;
-  /* ฟอนต์: อังกฤษ/ตัวเลข = Roboto Flex, ภาษาไทย = Kanit (Roboto Flex ไม่มีตัวไทย เบราว์เซอร์จึงใช้ Kanit กับตัวไทยเอง) */
-  --font-body: 'Roboto Flex', 'Kanit', system-ui, sans-serif;
-  --font-display: 'Roboto Flex', 'Kanit', system-ui, sans-serif;
+  /* ฟอนต์ทั้งเว็บ: IBM Plex Sans Thai (ไทย + อังกฤษ/ตัวเลข) หนักสุด 700 ค่า 800/900 ใน CSS จะแสดงเป็น 700 */
+  --font-body: 'IBM Plex Sans Thai', system-ui, sans-serif;
+  --font-display: 'IBM Plex Sans Thai', system-ui, sans-serif;
   background: var(--bg);
   color: var(--ink);
   font-family: var(--font-body);
