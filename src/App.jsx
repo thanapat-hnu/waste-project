@@ -5,6 +5,7 @@ import Home from './pages/Home'
 import Trend from './pages/Trend'
 import Clusters from './pages/Clusters'
 import Province from './pages/Province'
+import Models from './pages/Models'
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
             <Route path="/clusters" element={<Clusters />} />
             <Route path="/province" element={<Province />} />
             <Route path="/province/:name" element={<Province />} />
+            <Route path="/models" element={<Models />} />
           </Routes>
         </BrowserRouter>
       </SelectionProvider>

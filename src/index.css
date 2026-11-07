@@ -71,6 +71,8 @@ button { cursor: pointer; }
 /* navbar: ทุกปุ่มสูง 38px มุมโค้งเท่ากัน อยู่กึ่งกลางแนวตั้ง และเมนูหน้ากว้างเท่ากัน */
 .top-nav.seg { align-self: center; display: grid; grid-auto-columns: 1fr; grid-auto-flow: column; }
 .top-nav a { justify-content: center; }
+/* เมนูที่ใช้ไม่ได้ในโหมดนี้ (ทดสอบโมเดลตอนเลือกเฉลี่ย 7 ปี) */
+.top-nav .nav-disabled { height: 32px; padding: 0 16px; border-radius: 9px; font-size: 14px; font-weight: 500; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap; color: var(--ink2); opacity: 0.5; cursor: not-allowed; user-select: none; }
 .theme-icon { width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid currentColor; background: linear-gradient(90deg, currentColor 50%, transparent 50%); }
 
 /* segmented control (เมนูบน + แท็บ) */
@@ -299,8 +301,24 @@ body.dark .map-canvas .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) 
 .full-map .map-panel { height: calc(100vh - 230px); min-height: 560px; }
 .empty-hint { margin: 0; font-size: 14px; }
 
+/* หน้าทดสอบโมเดล */
+.page-main { max-width: 1200px; margin: 0 auto; padding: 24px 32px 40px; display: flex; flex-direction: column; gap: 16px; }
+.model-lead { max-width: 72ch; line-height: 1.65; margin: 0 0 16px; }
+.model-metric-desc { margin: 12px 0 16px; }
+.model-bars li { grid-template-columns: minmax(120px, 210px) minmax(0, 1fr) 64px; }
+.model-bars li.is-chosen .rank-label { color: var(--ink); font-weight: 600; }
+.model-table td:first-child { white-space: nowrap; }
+.model-table tr.is-chosen { background: color-mix(in oklab, var(--focus) 8%, transparent); }
+.model-table tr.is-baseline td { color: var(--ink2); }
+.model-table td.is-best { color: var(--focus); font-weight: 700; }
+.chosen-tag { margin-left: 8px; padding: 2px 8px; border-radius: 999px; background: var(--focus); color: #fff; font-size: 11px; font-weight: 600; vertical-align: 1px; }
+.metric-list { margin: 0; display: flex; flex-direction: column; gap: 10px; font-size: 14px; }
+.metric-list dt { font-weight: 600; }
+.metric-list dd { margin: 2px 0 0; color: var(--ink2); line-height: 1.55; }
+.note-list { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 10px; font-size: 14px; line-height: 1.6; }
+
 @media (max-width: 900px) {
-  .header-inner, .two-col, .full-map { padding-left: 12px; padding-right: 12px; }
+  .header-inner, .two-col, .full-map, .page-main { padding-left: 12px; padding-right: 12px; }
   .col-right { position: static; }
   .map-panel { height: 70vh; min-height: 460px; }
   .kpi-value { font-size: 28px; }
