@@ -1,10 +1,16 @@
 // กราฟพื้นฐาน วาดเองด้วย HTML/SVG ตาม WEB_SPEC ข้อ 3 (โครงหยาบ รอ design จริง)
 
+// "512 ตัน/วัน" → ตัวเลขตัวใหญ่ + หน่วยตัวเล็กบรรทัดเดียวกัน (ไม่ให้หน่วยตกไปบรรทัดใหม่)
+const NUM_UNIT = /^([\d,.+\-−]+)\s+(.+)$/
+
 export function KpiCard({ label, value, sub, color }) {
+  const m = typeof value === 'string' ? value.match(NUM_UNIT) : null
   return (
     <div className="kpi card">
       <div className="kpi-label">{label}</div>
-      <div className="kpi-value" style={{ color }}>{value}</div>
+      <div className="kpi-value" style={{ color }}>
+        {m ? <>{m[1]}<small className="kpi-unit">{m[2]}</small></> : value}
+      </div>
       {sub && <div className="kpi-sub">{sub}</div>}
     </div>
   )

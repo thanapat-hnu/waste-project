@@ -33,7 +33,7 @@ export default function Province() {
   if (!selected)
     return (
       <>
-        <Header title="ข้อมูลจังหวัด" subtitle="รายละเอียดการจัดการขยะรายจังหวัด" />
+        <Header title="เจาะลึกรายจังหวัด" subtitle="ขยะบ้านคุณถูกจัดการอย่างไร เทียบกับกลุ่มและทั้งประเทศ" />
         <EmptyState top={<ProvinceSearch names={names} onPick={go} />} map={<ThailandMap colorOf={grey} onSelect={go} />} />
       </>
     )
@@ -97,7 +97,7 @@ function ProvinceDetail({ selected, go }) {
         <KpiCard label="% กำจัดไม่ถูกต้อง" value={<ImproperValue pct={p.improper_pct[LAST]} />} sub={`ประเทศ ${fmtPct(natPct('improper_tpd'))}`} />
       </div>
 
-      <Card title="สัดส่วนการจัดการขยะรายปี">
+      <Card title="7 ปี ขยะจังหวัดนี้ไปไหน">
         <SeriesLegend items={[{ name: 'รีไซเคิล', color: SERIES.recycle }, { name: 'กำจัดถูกต้อง', color: SERIES.proper }, { name: 'กำจัดไม่ถูกต้อง', color: SERIES.improper }]} />
         <StackedBar100
           ariaLabel="สัดส่วนการจัดการขยะรายปี"
@@ -115,7 +115,7 @@ function ProvinceDetail({ selected, go }) {
       </Card>
 
       <div className="grid-2">
-        <Card title={`เทียบกับกลุ่มและทั้งประเทศ (${YEARS[LAST]})`}>
+        <Card title={`ดีกว่าหรือแย่กว่า เมื่อเทียบกลุ่มและทั้งประเทศ (${YEARS[LAST]})`}>
           {compare.map((m) => (
             <div key={m.name} className="compare">
               <div className="small"><b>{m.name}</b></div>
@@ -133,7 +133,7 @@ function ProvinceDetail({ selected, go }) {
             </div>
           ))}
         </Card>
-        <Card title="สิ่งที่ควรทำ">
+        <Card title="ควรเร่งแก้อะไร">
           <ol className="policy-list">
             {actions.map(([title, why]) => (
               <li key={title}>
@@ -153,7 +153,7 @@ function ProvinceDetail({ selected, go }) {
 
   return (
     <>
-      <Header title="ข้อมูลจังหวัด" subtitle="รายละเอียดการจัดการขยะรายจังหวัด" />
+      <Header title="เจาะลึกรายจังหวัด" subtitle="ขยะบ้านคุณถูกจัดการอย่างไร เทียบกับกลุ่มและทั้งประเทศ" />
       <TwoColumn left={left} right={<ThailandMap colorOf={colorOf} selected={selected} onSelect={go} />} />
     </>
   )

@@ -51,7 +51,7 @@ export default function ModelEval({ models }) {
           </div>
         </Card>
 
-        <Card title="เทียบทีละตัวชี้วัด">
+        <Card title="เทียบกันทีละตัวชี้วัด">
           <Tabs tabs={RANKED.map((m) => ({ key: m.key, label: m.label }))} value={metricKey} onChange={setMetricKey} />
           <p className="muted small model-metric-desc">
             {metric.desc} · <b>{metric.better === 'high' ? 'ยิ่งสูงยิ่งดี' : 'ยิ่งต่ำยิ่งดี'}</b>
@@ -59,13 +59,13 @@ export default function ModelEval({ models }) {
           <MetricBars models={models} metric={metric} />
         </Card>
 
-        <Card title="ผลทดสอบทั้งหมด (K = 5)">
+        <Card title="ผลทดสอบครบทุกตัว (K = 5)">
           <p className="muted small card-sub">ตัวหนาสีน้ำเงิน = ดีที่สุดในคอลัมน์ (ไม่นับเกณฑ์อ้างอิง B1, B2) · ↑ ยิ่งสูงยิ่งดี ↓ ยิ่งต่ำยิ่งดี · กดหัวคอลัมน์เพื่อเรียง</p>
           <ResultTable models={models} />
         </Card>
 
         <div className="grid-2">
-          <Card title="อ่านผลอย่างไร">
+          <Card title="ตัวเลขพวกนี้บอกอะไร">
             <dl className="metric-list">
               {METRICS.map((m) => (
                 <div key={m.key}>
@@ -75,7 +75,7 @@ export default function ModelEval({ models }) {
               ))}
             </dl>
           </Card>
-          <Card title="ข้อสังเกต">
+          <Card title="สิ่งที่ต้องรู้ก่อนอ่านผล">
             <ul className="note-list">
               <li><b>Ward</b> ได้ silhouette และ province purity สูงสุด แต่ ARI median แค่ 0.404 รันซ้ำแล้วกลุ่มเปลี่ยนบ่อย</li>
               <li><b>GMM</b> แยกกลุ่มตาม % กำจัดไม่ถูกต้องได้น้อยมาก (η² Improper 0.173) ทั้งที่เป็นตัวแปรสำคัญของงานนี้</li>

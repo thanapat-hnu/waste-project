@@ -29,7 +29,7 @@ export default function Models() {
   if (!YEARS.includes(year)) return <Navigate to="/overview" replace />
   return (
     <>
-      <Header title="ทดสอบโมเดล" subtitle="เปรียบเทียบวิธีจัดกลุ่มรายปี (K = 5) ก่อนเลือกใช้ K-means">
+      <Header title="ทำไมต้อง K-means" subtitle="เทียบ 4 วิธีจัดกลุ่มรายปี (K = 5) กับเกณฑ์อ้างอิง วิธีไหนแบ่งได้ดีที่สุด">
         <Select label="เลือกปี" align="right" value={year} onChange={(v) => setParams({ year: v }, { replace: true })} options={YEAR_OPTIONS} />
       </Header>
       <main className="page-main">

@@ -101,6 +101,9 @@ export default function Intro() {
     const pop = names.reduce((a, n) => a + yearly.provinces[n].rows[LAST].population, 0)
     const worst = yearly.cluster_ids.at(-1)
     const hot = names.filter((n) => yearly.provinces[n].cluster[LAST] === worst)
+    const hotRows = hot.map((n) => yearly.provinces[n].rows[LAST])
+    const hotImproper = hotRows.reduce((a, r) => a + r.waste_improper_tpd, 0)
+    const hotWaste = hotRows.reduce((a, r) => a + r.waste_generated_tpd, 0)
     return {
       waste: nat.waste_tpd,
       kgPerPerson: (nat.waste_tpd * 1000) / pop,
@@ -111,6 +114,9 @@ export default function Intro() {
       worst,
       worstName: yearly.cluster_names[worst],
       hot,
+      // กลุ่มแย่สุด: % ขยะของกลุ่มที่กำจัดผิดวิธี และส่วนแบ่งในขยะกำจัดผิดวิธีทั้งประเทศ
+      hotImproperPct: (hotImproper / hotWaste) * 100,
+      hotShareOfNation: (hotImproper / nat.improper_tpd) * 100,
       years: YEARS.map((y) => ({ y, v: (yearly.national[y].improper_tpd / yearly.national[y].waste_tpd) * 100 })),
     }
   }, [yearly, names])
@@ -150,7 +156,7 @@ export default function Intro() {
           ขยะของเรา<br />ไปอยู่ที่ไหน<span className="accent">?</span>
         </Reveal>
         <Reveal as="p" className="lead" delay={260}>
-          เลื่อนลงเพื่อดูว่าขยะที่คนไทยสร้างทุกวัน ถูกนำกลับมาใช้ กำจัดถูกต้อง หรือถูกทิ้งผิดวิธีมากแค่ไหน
+          ขยะที่คนไทยทิ้งทุกวัน ได้ไปต่อ หรือไปจบผิดที่? เลื่อนลงไปดูคำตอบจากข้อมูล 7 ปี 77 จังหวัด
         </Reveal>
         <div className="scroll-hint" aria-hidden>
           <span>เลื่อนลง</span>
@@ -161,18 +167,18 @@ export default function Intro() {
       {/* ฉาก 2: ปริมาณขยะต่อวัน */}
       <section className="scene">
         <Reveal className="eyebrow">ปี {YEARS[LAST]}</Reveal>
-        <Reveal as="p" className="lead">ทุกวัน ทั้งประเทศสร้างขยะ</Reveal>
+        <Reveal as="p" className="lead">แค่วันเดียว คนไทยทั้งประเทศทิ้งขยะรวมกัน</Reveal>
         <Reveal as="div" className="giant" delay={100}>
           <CountUp value={story.waste} /> <small>ตัน</small>
         </Reveal>
         <Reveal as="p" className="lead" delay={200}>
-          เฉลี่ยคนละ <b>{story.kgPerPerson.toFixed(2)} กิโลกรัม</b> ต่อวัน
+          ตกคนละ <b>{story.kgPerPerson.toFixed(2)} กิโลกรัม</b> ต่อวัน
         </Reveal>
       </section>
 
       {/* ฉาก 3: ขยะไปไหน */}
       <section className="scene band green">
-        <Reveal as="h2" className="mega sm">แล้วขยะไปไหน</Reveal>
+        <Reveal as="h2" className="mega sm">ทิ้งแล้ว ไปไหนต่อ?</Reveal>
         <div className="split">
           {[
             ['นำกลับมาใช้', story.recycle, SERIES.recycle],
@@ -191,7 +197,7 @@ export default function Intro() {
           <span style={{ width: `${story.improper}%`, background: SERIES.improper }} />
         </Reveal>
         <Reveal as="p" className="lead" delay={500}>
-          ขยะที่กำจัดไม่ถูกต้องรวม <b>{Math.round(story.improperTon).toLocaleString('en-US')} ตันต่อวัน</b>
+          ยังมีขยะถูกกำจัดผิดวิธีถึง <b>{Math.round(story.improperTon).toLocaleString('en-US')} ตันต่อวัน</b>
         </Reveal>
       </section>
 
@@ -200,7 +206,11 @@ export default function Intro() {
         <div className="map-copy">
           <Reveal className="eyebrow">กลุ่ม {story.worst} · ปี {YEARS[LAST]}</Reveal>
           <Reveal as="h2" className="mega sm" delay={100}>
-            <span className="accent">{story.hot.length} จังหวัด</span><br />{story.worstName}
+            <span className="accent">{story.hot.length} จังหวัด</span><br />กำจัดขยะผิดวิธี<br />หนักสุดในประเทศ
+          </Reveal>
+          <Reveal as="p" className="lead" delay={160}>
+            ขยะถึง <b>{Math.round(story.hotImproperPct)}%</b> ของจังหวัดกลุ่มนี้ยังไปจบผิดที่ คิดเป็น{' '}
+            <b>{Math.round(story.hotShareOfNation)}%</b> ของขยะกำจัดผิดวิธีทั้งประเทศ
           </Reveal>
           <Reveal className="chips" delay={220}>
             {story.hot.map((n) => (
@@ -215,7 +225,7 @@ export default function Intro() {
 
       {/* ฉาก 5: 7 ปีที่ผ่านมา */}
       <section className="scene band brown">
-        <Reveal className="eyebrow">สัดส่วนกำจัดไม่ถูกต้องทั้งประเทศ</Reveal>
+        <Reveal className="eyebrow">7 ปีผ่านไป ขยะกำจัดผิดวิธีทั้งประเทศ</Reveal>
         <Reveal as="h2" className="mega sm" delay={100}>
           จาก {first.v.toFixed(1)}% {last.v <= first.v ? 'เหลือ' : 'เพิ่มเป็น'} <span className="accent">{last.v.toFixed(1)}%</span>
         </Reveal>
@@ -231,8 +241,8 @@ export default function Intro() {
 
       {/* ฉาก 6: ไปต่อ */}
       <section className="scene cta">
-        <Reveal as="h2" className="mega sm">ดูจังหวัดของคุณ</Reveal>
-        <Reveal as="p" className="lead" delay={100}>สำรวจตัวเลขรายจังหวัด กลุ่มจังหวัด และทิศทางการเปลี่ยนแปลงตลอด 7 ปี</Reveal>
+        <Reveal as="h2" className="mega sm">จังหวัดของคุณอยู่ตรงไหน?</Reveal>
+        <Reveal as="p" className="lead" delay={100}>เช็กตัวเลขบ้านคุณ เทียบกับจังหวัดในกลุ่มเดียวกัน และดูว่า 7 ปีที่ผ่านมาดีขึ้นหรือแย่ลง</Reveal>
         <Reveal className="cta-row" delay={200}>
           <Link to="/overview" className="theme-btn big">เข้าสู่แดชบอร์ด</Link>
           <Link to="/province" className="ghost-pill">ค้นหาจังหวัด</Link>

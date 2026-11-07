@@ -205,6 +205,10 @@ a.theme-btn:hover { color: var(--accent-ink); }
 .ghost-pill { display: inline-flex; align-items: center; height: 48px; padding: 0 22px; border-radius: 999px; border: 1px solid var(--line); color: var(--ink); text-decoration: none; font-weight: 600; transition: background 0.2s, border-color 0.2s; }
 .ghost-pill:hover { background: var(--field); border-color: var(--ink2); color: var(--ink); }
 
+/* เลื่อนแล้วหยุดทีละฉาก (ใช้เฉพาะหน้าเล่าเรื่อง) · 63px = ความสูงแถบเมนูที่ติดด้านบน */
+html:has(.story) { scroll-snap-type: y mandatory; scroll-padding-top: 63px; }
+.story .scene { scroll-snap-align: start; scroll-snap-stop: always; }
+.story .scene, .story .scene.band, .story .scene.cta { min-height: calc(100vh - 63px); }
 .scene { min-height: 92vh; padding: 12vh var(--story-pad); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: 22px; position: relative; overflow: hidden; }
 .scene.band { min-height: 86vh; }
 /* พื้นหลังเต็มจอโทนเข้มแบบ Alto */
@@ -319,6 +323,7 @@ a.theme-btn:hover { color: var(--accent-ink); }
 .kpi-label { font-size: 13px; color: var(--ink2); }
 .kpi-value { font-family: var(--font-display); font-size: 36px; line-height: 1.1; font-weight: 800; letter-spacing: -0.02em; margin-top: 6px; }
 .kpi-value small { font-size: 14px; font-weight: 400; color: var(--ink2); }
+.kpi-value .kpi-unit { margin-left: 6px; font-size: 16px; font-weight: 500; letter-spacing: 0; white-space: nowrap; }
 .kpi-text { font-size: 17px; font-weight: 600; letter-spacing: 0; }
 .kpi-sub { font-size: 12px; color: var(--ink2); margin-top: 4px; }
 .zero-improper { color: oklch(0.55 0.14 150); font-size: 17px; font-weight: 600; letter-spacing: 0; }

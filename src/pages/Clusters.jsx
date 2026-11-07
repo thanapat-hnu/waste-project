@@ -96,7 +96,7 @@ export default function Clusters() {
   const policies = useMemo(() => policiesFor(data, c, isAvg), [data, c, isAvg])
   const highlights = useMemo(() => (isAvg ? null : groupHighlights(data, c)), [data, c, isAvg])
   const policy = (
-    <Card title="ประเด็นนโยบายที่แนะนำ">
+    <Card title="ควรแก้ตรงไหนก่อน">
       {policies.length ? (
         <ol className="policy-list">
           {policies.map(([title, why]) => (
@@ -177,7 +177,7 @@ export default function Clusters() {
 
       {isAvg ? (
         <>
-          <Card title={`จังหวัดในกลุ่ม (${yearLabel}) · ${stats.members.length} จังหวัด`}>
+          <Card title={`ใครอยู่ในกลุ่มนี้บ้าง · ${stats.members.length} จังหวัด (${yearLabel})`}>
             {/* key ทำให้กลับไปหน้า 1 เมื่อเปลี่ยนกลุ่ม */}
             <AvgProvinceTable key={c} members={stats.members} />
           </Card>
@@ -185,13 +185,13 @@ export default function Clusters() {
         </>
       ) : (
         <>
-          <Card title={`จังหวัดในกลุ่ม (${yearLabel}) · ${stats.members.length} จังหวัด`}>
+          <Card title={`ใครอยู่ในกลุ่มนี้บ้าง · ${stats.members.length} จังหวัด (${yearLabel})`}>
             <p className="muted small card-sub">เส้นทางกลุ่มการกำจัด 7 ปีของแต่ละจังหวัด · ช่องสีเต็ม = ปีที่อยู่กลุ่ม {c}</p>
             <YearlyPathTable key={`${c}-${year}`} members={stats.members} c={c} year={year} />
           </Card>
           <div className="grid-2">
           {policy}
-          <Card title="จำนวนจังหวัดในกลุ่มรายปี">
+          <Card title="7 ปี กลุ่มนี้ใหญ่ขึ้นหรือเล็กลง">
             <BarChartV
               ariaLabel="จำนวนจังหวัดในกลุ่มรายปี"
               items={YEARS.map((y, i) => ({ label: String(y), value: stats.perYear[i], color: CLUSTER5[c - 1], dim: y !== year, text: stats.perYear[i] }))}
@@ -205,7 +205,7 @@ export default function Clusters() {
 
   return (
     <>
-      <Header title="กลุ่มจังหวัด" subtitle={isAvg ? 'กลุ่มเฉลี่ย 7 ปี 4 กลุ่ม' : 'กลุ่มการกำจัดรายปี 5 กลุ่ม'}>
+      <Header title="จังหวัดไหน อยู่กลุ่มเดียวกัน" subtitle={isAvg ? 'แบ่ง 77 จังหวัดเป็น 4 กลุ่ม จากค่าเฉลี่ย 7 ปี' : 'แบ่งจังหวัดเป็น 5 กลุ่ม ตามการกำจัดขยะรายปี'}>
         <Select label="เลือกปี" align="right" value={year} onChange={(v) => update({ year: v })} options={YEAR_OPTIONS} />
       </Header>
       <TwoColumn

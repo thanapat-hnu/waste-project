@@ -64,7 +64,7 @@ export default function Trend() {
 
   return (
     <>
-      <Header title="การเปลี่ยนแปลง" subtitle="ทิศทางการจัดการขยะของแต่ละจังหวัด 2562–2568" />
+      <Header title="7 ปีผ่านไป ดีขึ้นหรือแย่ลง" subtitle="ส่องทิศทางการจัดการขยะของแต่ละจังหวัด 2562–2568" />
       {selected ? (
         <TwoColumn left={<TrendDetail selected={selected} onBack={clearSelection} />} right={map} />
       ) : (
@@ -137,7 +137,7 @@ function TrendDetail({ selected, onBack }) {
         />
       </div>
 
-      <Card title="ทิศทางการเปลี่ยนแปลงทั้ง 3 ด้าน">
+      <Card title="3 ด้าน ขยับขึ้นหรือลง">
         <p className="muted small card-sub">วิเคราะห์จาก OLS Slope ที่ใช้ใน K-Means · พ.ศ. 2562–2568</p>
         <div className="dir-grid">
           {METRICS.map((m, i) => {
@@ -169,7 +169,7 @@ function TrendDetail({ selected, onBack }) {
         </ul>
       </details>
 
-      <Card title="สัดส่วนการจัดการขยะรายปี (% จริง)">
+      <Card title="ตัวเลขจริงปีต่อปี (%)">
         <SeriesLegend items={METRICS} />
         <LineChart
           labels={YEARS}
@@ -179,7 +179,7 @@ function TrendDetail({ selected, onBack }) {
         <p className="small">{summary}</p>
       </Card>
 
-      <Card title="ความชันการเปลี่ยนแปลง (Slope)">
+      <Card title="เปลี่ยนเร็วแค่ไหน เทียบค่าเฉลี่ยกลุ่ม (Slope)">
         <div className="slope-rows" role="img" aria-label="ความชันเทียบค่าเฉลี่ยกลุ่ม">
           {METRICS.map((m, i) => {
             const v = t.slope_yj[i]
