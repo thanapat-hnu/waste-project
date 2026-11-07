@@ -191,13 +191,15 @@ export default function Clusters() {
 const PAGE_SIZE = 5
 const byThai = (a, b) => a.localeCompare(b, 'th')
 const DEFAULT_SORT = { key: 'name', dir: 1 }
+// ตารางเฉลี่ย 7 ปี เริ่มเรียงจากกำจัดไม่ถูกต้องมากไปน้อย
+const AVG_DEFAULT_SORT = { key: 'improper_pct', dir: -1 }
 
 // ตัวกรอง/การเรียง/แบ่งหน้าที่ใช้ร่วมกันของตารางจังหวัดในกลุ่ม
-function useTableControls(all) {
+function useTableControls(all, defaultSort = DEFAULT_SORT) {
   const [page, setPage] = useState(0)
   const [q, setQ] = useState('')
   const [region, setRegion] = useState('')
-  const [sort, setSort] = useState(DEFAULT_SORT)
+  const [sort, setSort] = useState(defaultSort)
 
   const regions = [...new Set(all.map((r) => r.region))].sort(byThai)
   const filtered = all
@@ -223,11 +225,11 @@ function useTableControls(all) {
     setPage,
     // คอลัมน์ข้อความเริ่มเรียง ก→ฮ, คอลัมน์ตัวเลขเริ่มจากมากไปน้อย
     toggleSort: (key) => reset(setSort)(sort.key === key ? { key, dir: -sort.dir } : { key, dir: typeof all[0]?.[key] === 'string' ? 1 : -1 }),
-    dirty: q !== '' || region !== '' || sort.key !== DEFAULT_SORT.key || sort.dir !== DEFAULT_SORT.dir,
+    dirty: q !== '' || region !== '' || sort.key !== defaultSort.key || sort.dir !== defaultSort.dir,
     clearAll: () => {
       setQ('')
       setRegion('')
-      setSort(DEFAULT_SORT)
+      setSort(defaultSort)
       setPage(0)
     },
   }
@@ -288,7 +290,7 @@ const AVG_COLUMNS = [
 // ตารางจังหวัดในกลุ่มเฉลี่ย 7 ปี: กรองตามชื่อ/ภาค กดหัวคอลัมน์เพื่อเรียง แบ่งหน้าละ 5 จังหวัด
 function AvgProvinceTable({ members }) {
   const { avg4 } = useData()
-  const t = useTableControls(members.map((n) => ({ name: n, ...avg4.provinces[n] })))
+  const t = useTableControls(members.map((n) => ({ name: n, ...avg4.provinces[n] })), AVG_DEFAULT_SORT)
   return (
     <>
       <TableToolbar t={t} idPrefix="avg" />
