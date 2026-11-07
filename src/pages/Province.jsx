@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import { usePageTitle } from '../lib/usePageTitle'
 import { provinceActions } from '../lib/policy'
 import { useData } from '../lib/DataContext'
 import { useSelection } from '../lib/SelectionContext'
@@ -22,6 +23,7 @@ export default function Province() {
   const { province, setProvince } = useSelection()
   // ลำดับ: ชื่อใน URL → จังหวัดที่เลือกจากหน้าอื่น (ไม่มีค่าเริ่มต้น ให้ผู้ใช้เลือกเอง)
   const selected = [name, province].find((n) => n && yearly.provinces[n])
+  usePageTitle(selected || 'ค้นหาจังหวัด')
   useEffect(() => {
     if (name && yearly.provinces[name]) setProvince(name)
   }, [name, setProvince, yearly])

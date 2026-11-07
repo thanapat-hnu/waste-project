@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { usePageTitle } from '../lib/usePageTitle'
 import { useData } from '../lib/DataContext'
 import { useSelection } from '../lib/SelectionContext'
 import EmptyState from '../components/EmptyState'
@@ -24,6 +25,7 @@ export default function Trend() {
   // ลำดับ: ?p= ในลิงก์ → จังหวัดที่เลือกจากหน้าอื่น (ไม่มีค่าเริ่มต้น ให้ผู้ใช้เลือกเอง)
   const fromUrl = params.get('p')
   const selected = [fromUrl, province].find((n) => n && trend.provinces[n])
+  usePageTitle(selected ? `${selected} · การเปลี่ยนแปลง` : 'การเปลี่ยนแปลง')
   useEffect(() => {
     if (fromUrl && trend.provinces[fromUrl]) setProvince(fromUrl)
   }, [fromUrl, setProvince, trend])

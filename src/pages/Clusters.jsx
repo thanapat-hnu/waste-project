@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { usePageTitle } from '../lib/usePageTitle'
 import { useData } from '../lib/DataContext'
 import { YEARS } from '../lib/data'
 import { CLUSTER5, CLUSTER5_FG, DELTA, GROUP4, MUTED } from '../lib/colors'
@@ -32,6 +33,7 @@ export default function Clusters() {
   // เลขกลุ่มที่ไม่มีอยู่จริง (เช่น c=9 หรือ c=5 ตอนเฉลี่ย) ใช้กลุ่มสุดท้ายแทน
   const cParam = Number(params.get('c'))
   const c = groupIds.includes(cParam) ? cParam : groupIds.at(-1)
+  usePageTitle(`กลุ่ม ${c} ${groupNames[c] ?? ''}`.trim())
 
   // กลุ่มของแต่ละจังหวัดในปีที่เลือก
   const current = useMemo(() => {
@@ -114,7 +116,7 @@ export default function Clusters() {
   const tabs = (
     <div className="top-stack">
       {/* กลับหน้าหลักโดยคงปีที่เลือกไว้ */}
-      <Link to={`/?year=${year}`} className="back-btn">
+      <Link to={`/overview?year=${year}`} className="back-btn">
         <span aria-hidden>‹</span> กลับหน้าหลัก
       </Link>
       <Tabs
