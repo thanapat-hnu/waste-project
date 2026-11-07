@@ -46,7 +46,7 @@ export function Header({ title, subtitle, children }) {
 // top = แถวเต็มความกว้างเหนือทั้งสองคอลัมน์ (เช่นแท็บ) ให้แผนที่เริ่มเสมอกับการ์ดแรก
 // เมนู "ทดสอบโมเดล" มีให้เห็นทุกหน้า แต่กดได้เฉพาะตอนเลือกปี 2562–2568 ในหน้าที่มีตัวเลือกปี (ภาพรวม / กลุ่มจังหวัด)
 // ผลทดสอบเป็นของการจัดกลุ่มรายปี ตอนเลือกเฉลี่ย 7 ปีหรือหน้าที่ไม่มีปี (คืน null) จึงเป็นปุ่มกดไม่ได้
-const YEAR_PAGES = ['/', '/clusters', '/models']
+const YEAR_PAGES = ['/overview', '/clusters', '/models']
 function useModelsYear() {
   const { pathname } = useLocation()
   const [params] = useSearchParams()

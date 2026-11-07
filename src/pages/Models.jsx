@@ -26,14 +26,14 @@ export default function Models() {
     }
   }, [])
 
-  if (!YEARS.includes(year)) return <Navigate to="/" replace />
+  if (!YEARS.includes(year)) return <Navigate to="/overview" replace />
   return (
     <>
       <Header title="ทดสอบโมเดล" subtitle="เปรียบเทียบวิธีจัดกลุ่มรายปี (K = 5) ก่อนเลือกใช้ K-means">
         <Select label="เลือกปี" align="right" value={year} onChange={(v) => setParams({ year: v }, { replace: true })} options={YEAR_OPTIONS} />
       </Header>
       <main className="page-main">
-        <Link to={`/?year=${year}`} className="back-btn" style={{ alignSelf: 'flex-start' }}>
+        <Link to={`/overview?year=${year}`} className="back-btn" style={{ alignSelf: 'flex-start' }}>
           <span aria-hidden>‹</span> กลับภาพรวมปี {year}
         </Link>
         {state.error ? (

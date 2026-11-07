@@ -73,15 +73,6 @@ button { cursor: pointer; }
 .page-title p { margin: 0; font-size: 13px; color: var(--ink2); }
 .header-extra { margin-left: auto; }
 .top-nav a { text-decoration: none; color: var(--ink); }
-<<<<<<< HEAD
-.theme-btn { display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 14px; border: none; border-radius: 12px; background: var(--field); font-size: 14px; font-weight: 500; white-space: nowrap; transition: background-color 0.2s; }
-.theme-btn:hover { background-color: color-mix(in oklab, var(--field) 100%, var(--ink) 6%); }
-/* navbar: ทุกปุ่มสูง 38px มุมโค้งเท่ากัน อยู่กึ่งกลางแนวตั้ง และเมนูหน้ากว้างเท่ากัน */
-.top-nav.seg { align-self: center; display: grid; grid-auto-columns: 1fr; grid-auto-flow: column; }
-.top-nav a { justify-content: center; }
-/* เมนูที่ใช้ไม่ได้ในโหมดนี้ (ทดสอบโมเดลตอนเลือกเฉลี่ย 7 ปี) */
-.top-nav .nav-disabled { height: 32px; padding: 0 16px; border-radius: 9px; font-size: 14px; font-weight: 500; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap; color: var(--ink2); opacity: 0.5; cursor: not-allowed; user-select: none; }
-=======
 /* ปุ่มสลับโหมด: ปุ่มแคปซูลสีแดงแบบ Alto */
 .theme-btn { display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 16px; border: none; border-radius: 999px; background: var(--accent); color: var(--accent-ink); font-size: 14px; font-weight: 600; white-space: nowrap; transition: filter 0.2s, transform 0.2s; }
 .theme-btn:hover { filter: brightness(1.08); transform: translateY(-1px); }
@@ -92,7 +83,8 @@ button { cursor: pointer; }
 .top-nav a::after { content: ''; position: absolute; left: 30%; right: 30%; bottom: 2px; height: 2px; border-radius: 2px; background: var(--accent); transform: scaleX(0); transition: transform 0.25s; }
 .top-nav.seg a.active { background: transparent; box-shadow: none; color: var(--ink); }
 .top-nav.seg a.active::after { transform: scaleX(1); }
->>>>>>> Moss
+/* เมนูที่ใช้ไม่ได้ตอนนี้ (ทดสอบโมเดลตอนเลือกเฉลี่ย 7 ปีหรือหน้าที่ไม่มีปี) หน้าตาเหมือนลิงก์อื่นแต่จางและกดไม่ได้ */
+.top-nav .nav-disabled { height: 38px; padding: 0 16px; font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap; color: var(--ink2); opacity: 0.45; cursor: not-allowed; user-select: none; }
 .theme-icon { width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid currentColor; background: linear-gradient(90deg, currentColor 50%, transparent 50%); }
 
 /* segmented control (เมนูบน + แท็บ) */
