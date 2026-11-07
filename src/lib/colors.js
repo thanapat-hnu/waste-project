@@ -1,7 +1,7 @@
 // สีข้อมูลตาม mockup "Waste Map v2" (ระดับรีไซเคิล/ตกค้างไม่มีใน mockup จึงใช้ชุดเดิมจาก WEB_SPEC)
-export const CLUSTER5 = ['oklch(0.55 0.19 300)', 'oklch(0.62 0.14 175)', 'oklch(0.58 0.16 235)', 'oklch(0.62 0.18 350)', 'oklch(0.72 0.17 55)']
-// ตัวอักษรบนพื้นสีของระดับรายปี
-export const CLUSTER5_FG = ['#ffffff', '#ffffff', '#ffffff', '#ffffff', '#1d1d1f']
+export const CLUSTER5 = ['oklch(0.55 0.19 300)', 'oklch(0.86 0.012 80)', 'oklch(0.73 0.014 80)', 'oklch(0.6 0.016 80)', 'oklch(0.72 0.17 55)']
+// ตัวอักษรบนพื้นสีของระดับรายปี (ระดับ 2–4 เป็นสีอ่อน)
+export const CLUSTER5_FG = ['#ffffff', '#1d1d1f', '#1d1d1f', '#1d1d1f', '#1d1d1f']
 export const GROUP4 = ['oklch(0.52 0.19 278)', 'oklch(0.68 0.12 182)', 'oklch(0.79 0.15 76)', 'oklch(0.57 0.21 355)']
 export const REC_LEVEL = ['#C9DCEF', '#8DB5DD', '#4F86C0', '#1F4E8C']
 export const BACKLOG_LEVEL = ['#F3DDBF', '#E8AE70', '#CF6E26', '#8E3D12']
