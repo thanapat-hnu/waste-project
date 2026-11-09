@@ -24,6 +24,8 @@ export default function App() {
             <Route path="/province" element={<Province />} />
             <Route path="/province/:name" element={<Province />} />
             <Route path="/models" element={<Models />} />
+            {/* พิมพ์ทางเข้าที่ไม่มีอยู่จริง (เช่น /way) พากลับหน้าแรก */}
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
           <EscCat />
         </BrowserRouter>
