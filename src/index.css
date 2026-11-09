@@ -569,3 +569,36 @@ button.group-card:active { transform: scale(0.98); }
 }
 @keyframes esc-cat-pop { 0%, 22% { opacity: 0; transform: scale(0.4); } 32%, 70% { opacity: 1; transform: scale(1); } 85%, 100% { opacity: 0; transform: scale(0.8); } }
 @media (prefers-reduced-motion: reduce) { .esc-cat { animation: none; bottom: 30vh; } .esc-cat-bubble { animation: none; } }
+
+/* ---------- หน้าสรุปรวม: จังหวัดนี้ดีขึ้นไหม (pages/Summary.jsx) ---------- */
+.better-main { max-width: 900px; }
+.better-card { padding: 22px 24px 18px; }
+.better-name { font-family: var(--font-display); font-size: 34px; font-weight: 800; line-height: 1.2; }
+.better-headline { margin: 6px 0 2px; font-size: 20px; font-weight: 600; }
+.better-verdict { display: inline-block; padding: 2px 14px; border-radius: 999px; font-weight: 800; }
+.better-sub { margin: 0 0 10px; color: var(--ink2); font-size: 14px; }
+.better-plot { position: relative; }
+.better-plot svg { display: block; width: 100%; height: auto; overflow: visible; }
+.better-col { cursor: default; transition: opacity 0.15s; }
+.better-tip { position: absolute; top: 0; transform: translateX(-50%); padding: 6px 12px; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow); font-size: 14px; font-weight: 700; white-space: nowrap; pointer-events: none; }
+.better-note { margin: 10px 0 0; color: var(--ink2); font-size: 13px; line-height: 1.6; }
+@media (max-width: 600px) { .better-name { font-size: 28px; } .better-headline { font-size: 17px; } }
+.better-picker { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.better-picker-label { font-weight: 700; }
+.better-search { flex: 1 1 240px; }
+.better-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.move-table td, .move-table th { text-align: left; }
+.move-table td:first-child { width: 70px; }
+.move-result { display: inline-block; padding: 2px 10px; border-radius: 999px; font-weight: 700; font-size: 13px; white-space: nowrap; }
+.move-foot { margin: 10px 0 0; }
+.axis-hint { display: flex; gap: 14px; color: var(--ink2); margin: 2px 0 0 4px; }
+.better-filter { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px 12px; }
+.filter-step { display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 700; }
+.filter-arrow { padding-bottom: 9px; color: var(--ink2); font-size: 18px; }
+.better-filter .filter-clear { align-self: flex-end; }
+.move-matrix th, .move-matrix td { text-align: center; padding: 8px 10px; }
+.move-matrix th:first-child, .move-matrix td:first-child { text-align: left; }
+.move-matrix td { font-size: 15px; font-weight: 700; }
+.link-btn { border: 0; background: none; padding: 0; font: inherit; font-weight: 600; color: var(--ink); cursor: pointer; text-align: left; }
+.link-btn:hover { color: var(--accent); text-decoration: underline; }
+.group-chip { display: inline-grid; place-items: center; min-width: 26px; height: 24px; padding: 0 8px; border-radius: 999px; font-size: 13px; font-weight: 700; white-space: nowrap; }

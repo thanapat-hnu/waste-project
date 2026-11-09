@@ -8,6 +8,7 @@ import Trend from './pages/Trend'
 import Clusters from './pages/Clusters'
 import Province from './pages/Province'
 import Models from './pages/Models'
+import Summary from './pages/Summary'
 import EscCat from './components/EscCat'
 
 export default function App() {
@@ -24,6 +25,7 @@ export default function App() {
             <Route path="/province" element={<Province />} />
             <Route path="/province/:name" element={<Province />} />
             <Route path="/models" element={<Models />} />
+            <Route path="/summary" element={<Summary />} />
             {/* พิมพ์ทางเข้าที่ไม่มีอยู่จริง (เช่น /way) พากลับหน้าแรก */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

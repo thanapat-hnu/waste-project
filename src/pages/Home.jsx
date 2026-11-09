@@ -235,6 +235,7 @@ export default function Home() {
         </Card>
       )}
 
+
       {isAvg && <Avg4Section tab={tab} focus={tab === 'dis' ? focus : null} onPick={pickGroup} />}
     </>
   )

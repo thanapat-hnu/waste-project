@@ -16,3 +16,7 @@ export const MUTED = 'rgba(118, 118, 128, 0.25)'
 
 export const REC_LEVEL_NAMES = ['รีไซเคิลต่ำ', 'ค่อนข้างต่ำ', 'ค่อนข้างดี', 'รีไซเคิลสูง']
 export const BACKLOG_LEVEL_NAMES = ['ตกค้างน้อย', 'ค่อนข้างน้อย', 'ค่อนข้างมาก', 'ตกค้างมาก']
+
+// ไล่สีกลุ่มจากเขียว (กลุ่ม 1 ดีที่สุด) ไปแดง (กลุ่ม 5 แย่ที่สุด) ใช้ในหน้าสรุปรวม
+export const GROUP_RAMP = ['oklch(0.62 0.15 150)', 'oklch(0.72 0.15 128)', 'oklch(0.8 0.15 92)', 'oklch(0.7 0.16 55)', 'oklch(0.6 0.2 27)']
+export const GROUP_RAMP_FG = ['#ffffff', '#1d1d1f', '#1d1d1f', '#1d1d1f', '#ffffff']
