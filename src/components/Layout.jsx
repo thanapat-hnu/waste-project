@@ -27,11 +27,7 @@ export function Header({ title, subtitle, children }) {
           {/* พาจังหวัดที่เลือกอยู่ติดไปด้วย */}
           <NavLink to="/overview">ภาพรวม</NavLink>
           <NavLink to={province ? `/province/${encodeURIComponent(province)}` : '/province'}>ค้นหาจังหวัด</NavLink>
-          {SHOW_TREND ? (
-            <NavLink to={province ? `/trend?p=${encodeURIComponent(province)}` : '/trend'}>การเปลี่ยนแปลง</NavLink>
-          ) : (
-            <span className="nav-disabled" aria-disabled="true" title="หน้านี้ปิดไว้ชั่วคราว">การเปลี่ยนแปลง</span>
-          )}
+          {SHOW_TREND && <NavLink to={province ? `/trend?p=${encodeURIComponent(province)}` : '/trend'}>การเปลี่ยนแปลง</NavLink>}
           {modelsYear ? (
             <NavLink to={`/models?year=${modelsYear}`}>ทดสอบโมเดล</NavLink>
           ) : (
