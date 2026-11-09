@@ -141,11 +141,7 @@ export default function Intro() {
         <nav className="top-nav seg">
           <NavLink to="/overview">ภาพรวม</NavLink>
           <NavLink to="/province">ค้นหาจังหวัด</NavLink>
-          {SHOW_TREND ? (
-            <NavLink to="/trend">การเปลี่ยนแปลง</NavLink>
-          ) : (
-            <span className="nav-disabled" aria-disabled="true" title="หน้านี้ปิดไว้ชั่วคราว">การเปลี่ยนแปลง</span>
-          )}
+          {SHOW_TREND && <NavLink to="/trend">การเปลี่ยนแปลง</NavLink>}
         </nav>
         <button className="ghost-btn" onClick={toggle} aria-label={dark ? 'เปลี่ยนเป็นโหมดสว่าง' : 'เปลี่ยนเป็นโหมดมืด'}>
           <span className="theme-icon" aria-hidden />
