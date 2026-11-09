@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { usePageTitle } from '../lib/usePageTitle'
 import { useData } from '../lib/DataContext'
+import { SHOW_AVG } from '../lib/features'
 import { YEARS } from '../lib/data'
 import { CLUSTER5, CLUSTER5_FG, DELTA, GROUP4, MUTED } from '../lib/colors'
 import { fmtPct, fmtTon } from '../lib/format'
@@ -12,7 +13,7 @@ import Select from '../components/Select'
 import { groupHighlights, policiesFor } from '../lib/policy'
 
 const LAST = YEARS.length - 1
-const YEAR_OPTIONS = [{ value: 'avg', label: 'เฉลี่ย 7 ปี' }, ...YEARS.map((y) => ({ value: y, label: String(y) }))]
+const YEAR_OPTIONS = [...(SHOW_AVG ? [{ value: 'avg', label: 'เฉลี่ย 7 ปี' }] : []), ...YEARS.map((y) => ({ value: y, label: String(y) }))]
 
 export default function Clusters() {
   const data = useData()
@@ -21,7 +22,8 @@ export default function Clusters() {
   const navigate = useNavigate()
   // ปีตามที่เลือกในหน้าแรก (?year=) ไม่มีหรือไม่ถูกต้องใช้ปีล่าสุด
   const yearParam = params.get('year')
-  const year = yearParam === 'avg' ? 'avg' : YEARS.includes(Number(yearParam)) ? Number(yearParam) : YEARS[LAST]
+  // ปิดโหมดเฉลี่ยอยู่ (SHOW_AVG) ลิงก์ ?year=avg จะแสดงปีล่าสุดแทน
+  const year = SHOW_AVG && yearParam === 'avg' ? 'avg' : YEARS.includes(Number(yearParam)) ? Number(yearParam) : YEARS[LAST]
   const isAvg = year === 'avg'
   const yearLabel = isAvg ? 'เฉลี่ย 7 ปี' : `ปี ${year}`
   const P = yearly.provinces
