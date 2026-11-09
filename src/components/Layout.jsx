@@ -1,6 +1,6 @@
 import { Link, NavLink, useLocation, useSearchParams } from 'react-router-dom'
 import { YEARS } from '../lib/data'
-import { SHOW_AVG } from '../lib/features'
+import { SHOW_AVG, SHOW_TREND } from '../lib/features'
 import { useSelection } from '../lib/SelectionContext'
 import { useTheme } from '../lib/theme'
 import HangingBin from './HangingBin'
@@ -27,7 +27,11 @@ export function Header({ title, subtitle, children }) {
           {/* พาจังหวัดที่เลือกอยู่ติดไปด้วย */}
           <NavLink to="/overview">ภาพรวม</NavLink>
           <NavLink to={province ? `/province/${encodeURIComponent(province)}` : '/province'}>ค้นหาจังหวัด</NavLink>
-          <NavLink to={province ? `/trend?p=${encodeURIComponent(province)}` : '/trend'}>การเปลี่ยนแปลง</NavLink>
+          {SHOW_TREND ? (
+            <NavLink to={province ? `/trend?p=${encodeURIComponent(province)}` : '/trend'}>การเปลี่ยนแปลง</NavLink>
+          ) : (
+            <span className="nav-disabled" aria-disabled="true" title="หน้านี้ปิดไว้ชั่วคราว">การเปลี่ยนแปลง</span>
+          )}
           {modelsYear ? (
             <NavLink to={`/models?year=${modelsYear}`}>ทดสอบโมเดล</NavLink>
           ) : (
