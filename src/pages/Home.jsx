@@ -282,7 +282,7 @@ export default function Home() {
 
   return (
     <>
-      <Header title="ขยะ 77 จังหวัด ไปจบที่ไหน" subtitle="ส่องการกำจัด รีไซเคิล และขยะตกค้าง ปี 2562–2568">
+      <Header title="ขยะทั่วไทย ไปจบที่ไหน" subtitle="ส่องการกำจัด รีไซเคิล และขยะตกค้าง ปี 2562–2568">
         <Select label="เลือกปี" align="right" value={year} onChange={(v) => update({ year: v })} options={YEAR_OPTIONS} />
       </Header>
       <TwoColumn top={tabs} left={left} right={right} />
