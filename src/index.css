@@ -569,3 +569,15 @@ button.group-card:active { transform: scale(0.98); }
 }
 @keyframes esc-cat-pop { 0%, 22% { opacity: 0; transform: scale(0.4); } 32%, 70% { opacity: 1; transform: scale(1); } 85%, 100% { opacity: 0; transform: scale(0.8); } }
 @media (prefers-reduced-motion: reduce) { .esc-cat { animation: none; bottom: 30vh; } .esc-cat-bubble { animation: none; } }
+
+/* ---------- สรุปรายปี ดีขึ้นหรือแย่ลง (components/YearOverYear.jsx) ---------- */
+.yoy-summary p { margin: 0 0 4px; }
+.yoy-summary { margin-bottom: 12px; }
+.yoy-table td, .yoy-table th { padding: 10px 12px; vertical-align: top; }
+.yoy-table td:first-child a { color: var(--ink); font-weight: 700; text-decoration: none; }
+.yoy-table td:first-child a:hover { color: var(--accent); }
+.yoy-table tr.is-cur { background: color-mix(in oklab, var(--accent) 9%, transparent); }
+.yoy-delta { display: block; margin-top: 2px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.yoy-verdict { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 999px; font-size: 13px; font-weight: 700; white-space: nowrap; }
+.yoy-verdict small { font-weight: 500; opacity: 0.85; }
+.yoy-note { margin-top: 10px; }
