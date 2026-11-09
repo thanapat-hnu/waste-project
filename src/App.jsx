@@ -8,7 +8,6 @@ import Clusters from './pages/Clusters'
 import Province from './pages/Province'
 import Models from './pages/Models'
 import EscCat from './components/EscCat'
-import AdGate from './components/AdGate'
 
 export default function App() {
   return (
@@ -26,7 +25,6 @@ export default function App() {
             <Route path="/models" element={<Models />} />
           </Routes>
           <EscCat />
-          <AdGate />
         </BrowserRouter>
       </SelectionProvider>
     </DataProvider>
