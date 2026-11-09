@@ -8,7 +8,7 @@ export function Loader({ leaving = false }) {
           <span key={n} className={`dot dot-${n}`} />
         ))}
       </div>
-      <div className="loader-brand">ขยะจังหวัด 77</div>
+      <div className="loader-brand">ขยะทั่วไทย</div>
       <div className="loader-msg">กำลังดึงข้อมูลจาก Supabase…</div>
     </div>
   )
