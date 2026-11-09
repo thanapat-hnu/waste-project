@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { usePageTitle } from '../lib/usePageTitle'
 import { useData } from '../lib/DataContext'
 import { useSelection } from '../lib/SelectionContext'
+import { SHOW_AVG } from '../lib/features'
 import { YEARS } from '../lib/data'
 import { BACKLOG_LEVEL, BACKLOG_LEVEL_NAMES, CLUSTER5, DELTA, FLOW, GROUP4, REC_LEVEL, REC_LEVEL_NAMES, SERIES } from '../lib/colors'
 import { fmtDays, fmtPct, fmtTon } from '../lib/format'
@@ -13,7 +14,7 @@ import ThailandMap from '../components/ThailandMap'
 import ImproperValue from '../components/ImproperValue'
 import Select from '../components/Select'
 
-const YEAR_OPTIONS = [{ value: 'avg', label: 'เฉลี่ย 7 ปี' }, ...YEARS.map((y) => ({ value: y, label: String(y) }))]
+const YEAR_OPTIONS = [...(SHOW_AVG ? [{ value: 'avg', label: 'เฉลี่ย 7 ปี' }] : []), ...YEARS.map((y) => ({ value: y, label: String(y) }))]
 const TAB_LABELS = { dis: 'การกำจัด', rec: 'รีไซเคิล', bl: 'ขยะตกค้าง' }
 
 export default function Home() {
@@ -22,7 +23,8 @@ export default function Home() {
   const [params, setParams] = useSearchParams()
   // ปีในลิงก์ที่ไม่มีข้อมูล (เช่น 2570) ใช้ปีล่าสุดแทน
   const yearParam = params.get('year')
-  const year = yearParam === 'avg' ? 'avg' : YEARS.includes(Number(yearParam)) ? Number(yearParam) : 2568
+  // ปิดโหมดเฉลี่ยอยู่ (SHOW_AVG) ลิงก์ ?year=avg จะแสดงปีล่าสุดแทน
+  const year = SHOW_AVG && yearParam === 'avg' ? 'avg' : YEARS.includes(Number(yearParam)) ? Number(yearParam) : 2568
   const isAvg = year === 'avg'
   // แท็บที่ไม่มีแล้ว (เช่น g4 เดิม ซึ่งรวมเข้าแท็บการกำจัดตอนเฉลี่ย 7 ปี) ใช้แท็บการกำจัดแทน
   const tabParam = params.get('tab')

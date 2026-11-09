@@ -1,5 +1,6 @@
 import { Link, NavLink, useLocation, useSearchParams } from 'react-router-dom'
 import { YEARS } from '../lib/data'
+import { SHOW_AVG } from '../lib/features'
 import { useSelection } from '../lib/SelectionContext'
 import { useTheme } from '../lib/theme'
 import HangingBin from './HangingBin'
@@ -53,7 +54,8 @@ function useModelsYear() {
   if (!YEAR_PAGES.includes(pathname)) return null
   const y = params.get('year')
   // ภาพรวม/กลุ่มจังหวัดที่ยังไม่เลือกปีจะแสดงปีล่าสุด
-  if (y == null) return pathname === '/models' ? null : YEARS.at(-1)
+  // ยังไม่เลือกปี หรือปิดโหมดเฉลี่ยอยู่แต่ลิงก์เป็น ?year=avg → หน้านั้นแสดงปีล่าสุด
+  if (y == null || (!SHOW_AVG && y === 'avg')) return pathname === '/models' ? null : YEARS.at(-1)
   return YEARS.includes(Number(y)) ? Number(y) : null
 }
 
