@@ -6,6 +6,7 @@ import { YEARS } from '../lib/data'
 import { SERIES } from '../lib/colors'
 import { useTheme } from '../lib/theme'
 import HangingBin from '../components/HangingBin'
+import { SHOW_TREND } from '../lib/features'
 
 // หน้าเปิดแบบเล่าเรื่อง (เลื่อนลงทีละฉาก) ก่อนเข้าแดชบอร์ด · ตัวเลขทั้งหมดดึงจากข้อมูลสด
 const LAST = YEARS.length - 1
@@ -140,7 +141,11 @@ export default function Intro() {
         <nav className="top-nav seg">
           <NavLink to="/overview">ภาพรวม</NavLink>
           <NavLink to="/province">ค้นหาจังหวัด</NavLink>
-          <NavLink to="/trend">การเปลี่ยนแปลง</NavLink>
+          {SHOW_TREND ? (
+            <NavLink to="/trend">การเปลี่ยนแปลง</NavLink>
+          ) : (
+            <span className="nav-disabled" aria-disabled="true" title="หน้านี้ปิดไว้ชั่วคราว">การเปลี่ยนแปลง</span>
+          )}
         </nav>
         <button className="ghost-btn" onClick={toggle} aria-label={dark ? 'เปลี่ยนเป็นโหมดสว่าง' : 'เปลี่ยนเป็นโหมดมืด'}>
           <span className="theme-icon" aria-hidden />
@@ -247,7 +252,7 @@ export default function Intro() {
           <Link to="/overview" className="theme-btn big">เข้าสู่แดชบอร์ด</Link>
           <Link to="/province" className="ghost-pill">ค้นหาจังหวัด</Link>
           <Link to="/clusters" className="ghost-pill">กลุ่มจังหวัด</Link>
-          <Link to="/trend" className="ghost-pill">การเปลี่ยนแปลง</Link>
+          {SHOW_TREND && <Link to="/trend" className="ghost-pill">การเปลี่ยนแปลง</Link>}
         </Reveal>
         <p className="muted small credit">ข้อมูล: ฐานข้อมูลรวมของทีม ปี {YEARS[0]}–{YEARS[LAST]} · ขอบเขตจังหวัด: geoBoundaries (ODbL)</p>
       </section>
