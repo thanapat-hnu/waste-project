@@ -28,6 +28,7 @@ export function Header({ title, subtitle, children }) {
           <NavLink to="/overview">ภาพรวม</NavLink>
           <NavLink to={province ? `/province/${encodeURIComponent(province)}` : '/province'}>ค้นหาจังหวัด</NavLink>
           {SHOW_TREND && <NavLink to={province ? `/trend?p=${encodeURIComponent(province)}` : '/trend'}>การเปลี่ยนแปลง</NavLink>}
+          <NavLink to="/summary">สรุปรวม</NavLink>
           {modelsYear ? (
             <NavLink to={`/models?year=${modelsYear}`}>ทดสอบโมเดล</NavLink>
           ) : (

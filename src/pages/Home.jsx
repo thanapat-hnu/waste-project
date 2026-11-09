@@ -13,7 +13,6 @@ import { BarChartV, Donut, KpiCard, RankBars, SeriesLegend, StackedBar100 } from
 import ThailandMap from '../components/ThailandMap'
 import ImproperValue from '../components/ImproperValue'
 import Select from '../components/Select'
-import YearOverYear from '../components/YearOverYear'
 
 const YEAR_OPTIONS = [...(SHOW_AVG ? [{ value: 'avg', label: 'เฉลี่ย 7 ปี' }] : []), ...YEARS.map((y) => ({ value: y, label: String(y) }))]
 const TAB_LABELS = { dis: 'การกำจัด', rec: 'รีไซเคิล', bl: 'ขยะตกค้าง' }
@@ -236,8 +235,6 @@ export default function Home() {
         </Card>
       )}
 
-      {/* สรุปทั้งประเทศรายปี ดีขึ้นหรือแย่ลงเทียบปีก่อน (เฉพาะโหมดรายปี) */}
-      {!isAvg && <YearOverYear year={year} />}
 
       {isAvg && <Avg4Section tab={tab} focus={tab === 'dis' ? focus : null} onPick={pickGroup} />}
     </>
