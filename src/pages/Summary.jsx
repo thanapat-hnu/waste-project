@@ -162,12 +162,14 @@ function GroupLine({ s, groups }) {
   const [hover, setHover] = useState(null)
   const W = 760
   const H = 290
-  const pad = { l: 64, r: 30, t: 40, b: 38 }
+  const pad = { l: 64, r: 30, t: 40, b: 48 }
+  // เว้นระยะในกราฟซ้ายขวา ไม่ให้จุดปีแรก/ปีสุดท้ายชนเลขบนแกน
+  const inset = 30
   const g0 = groups[0]
   const g1 = groups.at(-1)
-  const x = (i) => pad.l + (i * (W - pad.l - pad.r)) / (s.length - 1)
+  const x = (i) => pad.l + inset + (i * (W - pad.l - pad.r - inset * 2)) / (s.length - 1)
   const y = (g) => pad.t + ((g - g0) / (g1 - g0)) * (H - pad.t - pad.b)
-  const step = (W - pad.l - pad.r) / (s.length - 1)
+  const step = (W - pad.l - pad.r - inset * 2) / (s.length - 1)
   const rowH = (H - pad.t - pad.b) / (g1 - g0)
   const hi = s.findIndex((p) => p.y === hover)
   const hp = s[hi]
@@ -194,9 +196,11 @@ function GroupLine({ s, groups }) {
           return (
             <g key={p.y} onMouseEnter={() => setHover(p.y)}>
               <rect x={x(i) - step / 2} y={0} width={step} height={H} fill="transparent" />
-              <circle cx={x(i)} cy={y(p.g)} r={hover === p.y ? 11 : 9} fill={GROUP_RAMP[p.g - 1]} stroke="var(--surface)" strokeWidth="3" />
+              {/* จุดของปีนั้น มีเลขกลุ่มอยู่ข้างใน */}
+              <circle cx={x(i)} cy={y(p.g)} r={hover === p.y ? 15 : 13} fill={GROUP_RAMP[p.g - 1]} stroke="var(--surface)" strokeWidth="3" />
+              <text x={x(i)} y={y(p.g) + 5} textAnchor="middle" fontSize="14" fontWeight="800" fill={GROUP_RAMP_FG[p.g - 1]}>{p.g}</text>
               {p.j != null && p.j !== 0 && (
-                <text x={x(i)} y={y(p.g) + (below ? 28 : -16)} textAnchor="middle" fontSize="14" fontWeight="700" fill={c}>{LOOK[p.j].word}</text>
+                <text x={x(i)} y={y(p.g) + (below ? 33 : -21)} textAnchor="middle" fontSize="14" fontWeight="700" fill={c}>{LOOK[p.j].word}</text>
               )}
               <text x={x(i)} y={H - 12} textAnchor="middle" fontSize="14" fontWeight={hover === p.y ? 700 : 500} fill={hover === p.y ? 'var(--ink)' : 'var(--ink2)'}>{p.y}</text>
             </g>
