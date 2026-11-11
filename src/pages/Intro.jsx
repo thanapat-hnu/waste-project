@@ -143,6 +143,7 @@ export default function Intro() {
           <NavLink to="/province">ค้นหาจังหวัด</NavLink>
           {SHOW_TREND && <NavLink to="/trend">การเปลี่ยนแปลง</NavLink>}
           <NavLink to="/summary">สรุปรวม</NavLink>
+          <NavLink to="/news">ข่าว</NavLink>
         </nav>
         <button className="ghost-btn" onClick={toggle} aria-label={dark ? 'เปลี่ยนเป็นโหมดสว่าง' : 'เปลี่ยนเป็นโหมดมืด'}>
           <span className="theme-icon" aria-hidden />
