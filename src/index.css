@@ -602,3 +602,31 @@ button.group-card:active { transform: scale(0.98); }
 .link-btn { border: 0; background: none; padding: 0; font: inherit; font-weight: 600; color: var(--ink); cursor: pointer; text-align: left; }
 .link-btn:hover { color: var(--accent); text-decoration: underline; }
 .group-chip { display: inline-grid; place-items: center; min-width: 26px; height: 24px; padding: 0 8px; border-radius: 999px; font-size: 13px; font-weight: 700; white-space: nowrap; }
+
+/* ---------- หน้าข่าวกับข้อมูล (/news) ---------- */
+.news-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.news-title { font-size: 22px; line-height: 1.35; margin: 12px 0 8px; }
+.news-provinces { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+.news-prov { padding: 4px 12px; border-radius: 999px; background: var(--field); border: 1px solid var(--line); color: var(--ink); font-size: 13px; text-decoration: none; transition: background 0.2s; }
+.news-prov:hover { background: var(--seg); }
+.news-compare h3 { font-size: 15px; margin: 0 0 6px; }
+.news-compare ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: 14px; line-height: 1.6; }
+.news-caveat { margin: 16px 0 0; padding: 10px 14px; border-radius: 10px; font-size: 14px; line-height: 1.6; background: color-mix(in oklab, oklch(0.78 0.15 80) 16%, transparent); }
+.news-sources { margin-top: 14px; color: var(--ink2); line-height: 1.7; }
+.news-sources a { color: inherit; }
+.news-pair-table { font-size: 12px; margin-top: 8px; }
+.news-pair-table th, .news-pair-table td { padding: 5px 6px; text-align: right; white-space: nowrap; }
+.news-pair-table tbody th { text-align: left; font-weight: 500; }
+.news-pair-table .swatch { margin-right: 6px; }
+.news-pair-table .is-focus { background: color-mix(in oklab, var(--line) 50%, transparent); font-weight: 600; }
+/* การ์ดกราฟรวมมีตารางค่าจริง 7 ปี ต้องกว้างพอไม่ให้ตารางล้น */
+.news-pair-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), 1fr)); }
+/* เลื่อน 1 ครั้ง = ไปกราฟถัดไป (จอกว้างที่วางกราฟแถวละ 2 ใบ = ไปแถวถัดไป) */
+html:has(.news-main) { scroll-snap-type: y mandatory; scroll-padding-top: calc(var(--header-h, 72px) + 12px); }
+.news-main > .tabs, .news-main > .card, .news-main .grid-2 > .card { scroll-snap-align: start; scroll-snap-stop: always; }
+.news-check-table th, .news-check-table td { padding: 7px 10px; white-space: nowrap; }
+.news-check-table td { text-align: right; font-variant-numeric: tabular-nums; }
+.news-check-table tbody th { text-align: left; font-weight: 500; }
+.news-check-table .is-ok { color: oklch(0.55 0.14 150); font-weight: 600; }
+.news-check-table .is-bad { color: oklch(0.58 0.2 27); font-weight: 600; }
+.news-check-table .is-na { color: var(--ink2); }
